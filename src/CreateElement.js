@@ -42,13 +42,7 @@ function render(element, container) {
     container.appendChild(dom)
 }
 
-const Didact = {
+export const Didact = {
     createElement,
     render,
 }
-
-
-const element = createElement('div', { id: 'foo' }, createElement('a', null, 'bar'), createElement('b')
-);
-const container = document.getElementById("root")
-Didact.render(element, container)
