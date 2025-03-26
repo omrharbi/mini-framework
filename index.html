@@ -1,12 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mer.js</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Router Test</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+        import { h } from './src/dom.js';
+        import { Router } from './src/router.js';
+
+       
+        function HomePage() {
+            return h('div', {},
+            h('h1', {}, 'Home Page'),
+            h('p', {}, 'Welcome to the home page!')
+            );
+        }
+
+     
+        function AboutPage() {
+            return h('div', {},
+            h('h1', {}, 'About Page'),
+            h('p', {}, 'Learn more about us.')
+            );
+        }
+
+        function Navigation() {
+            return h('nav', {},
+            h('a', { href: '/' }, 'Home'),
+            h('a', { href: '/about' }, 'About')
+            );
+        }
+
+        const router = new Router({
+            '/': () => [Navigation(), HomePage()],
+            '/about': () => [Navigation(), AboutPage()]
+        });
+
+        router.init();
+    </script>
+</body>
 </html>
