@@ -8,8 +8,6 @@ export function createStore(initialState) {
         },
         dispatch(action) {
             state = reducer(state, action);
-            console.log('state, ', state);
-            
             listeners.forEach(listener => listener());
         },
         subscribe(listener) {

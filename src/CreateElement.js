@@ -77,7 +77,11 @@ function render(vnode, parent) {
             const event = key.slice(2).toLowerCase();
             el.addEventListener(event, value);
         } else {
-            el.setAttribute(key, value);
+            if (key === 'className') {
+                el.setAttribute('class', value);
+            } else {
+                el.setAttribute(key, value);
+            }
         }
     }
 
