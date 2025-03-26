@@ -16,7 +16,7 @@ function App() {
     const filteredTodos = filterTodos(todos, filter)
 
     return Didact.createElement('div', { className: 'todo-container' },
-        Didact.createElement('h1', { className: 'title' }, 'Todo List'),
+        Didact.createElement('h1', { className: 'title' }, 'TODOS'),
         // Didact.createElement('button', { className: 'add-button' },
         //     Didact.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "28", height: "28", viewBox: "0 0 24 24" },
         //         Didact.createElement('g', { fill: "none", fillRule: "evenodd", stroke: "#fff", strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", transform: "translate(2 2)" },
