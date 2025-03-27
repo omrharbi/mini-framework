@@ -1,7 +1,7 @@
 import { createRouter } from "./Router.js";
 // Créer une instance globale du routeur
 window.Router = createRouter();
-const MyEvents = {
+export  const MyEvents = {
     events: {},
     on(event, callback) {
         if (!this.events[event]) this.events[event] = [];
@@ -14,7 +14,7 @@ const MyEvents = {
     },
 };
 
-function handleEvent(eventType, domElement, customEventName) {
+export  function handleEvent(eventType, domElement, customEventName) {
 
     domElement[`on${eventType}`] = (event) => {
         const eventData = {
@@ -33,23 +33,18 @@ function handleEvent(eventType, domElement, customEventName) {
             scrollHeight: event.target.scrollHeight || null, // Total height of the content
             scrollWidth: event.target.scrollWidth || null, // Total width of the content
         };
+        if (event.key === 'Enter' || event.code === 'Enter') {
+            MyEvents.trigger('enterKeyPress', eventData); // Trigger a specific event for "Enter"
+        }
+
         MyEvents.trigger(customEventName || eventType, eventData);
     };
+ }
+
+export function addCustomEventListener(domElement, eventType, callback, customEventName) {
+    // Register the callback with MyEvents
+    MyEvents.on(customEventName || eventType, callback);
+
+    // Attach the event listener to the DOM element
+    handleEvent(eventType, domElement, customEventName);
 }
-
-document.querySelectorAll(".tab").forEach((button) => {
-    handleEvent("click", button, "click");
-});
-MyEvents.on("click", (eventData) => {
-    const clickedButton = eventData.target;
-    document.querySelectorAll(".tab").forEach((button) => {
-        button.classList.remove("active");
-    });
-
-    clickedButton.classList.add("active");
-    console.log(clickedButton.textContent);
-    const newB = clickedButton.textContent.replace(/\s+/g, '');  // This removes all spaces
-
-    const newPath = `/${newB.toLowerCase()}`;
-    Router.navigate(newPath);
-});

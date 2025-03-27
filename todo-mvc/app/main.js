@@ -1,4 +1,5 @@
 import { Didact } from '../../src/CreateElement.js';
+import  { MyEvents,addCustomEventListener,handleEvent } from '../../src/eventlistenner.js';
 import { createStore } from '../../src/store.js';
 
 const initialState = {
@@ -12,7 +13,7 @@ function App() {
     const { todos, filter } = store.getState();
     console.log('filter', filter); // catkon 'all' fe bdya mn b3d o nbdloha
     console.log('todos', todos);
-    
+   
 
     const filteredTodos = filterTodos(todos, filter);    
 
@@ -23,20 +24,20 @@ function App() {
                 type: 'text',
                 className: 'todo-input',
                 placeholder: 'What needs to be done?',
-                onKeyup: (e) => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                        store.dispatch({
-                            type: 'ADD_TODO',
-                            payload: {
-                                id: Date.now(),
-                                text: e.target.value.trim(),
-                                completed: false
-                            }
-                        });
-                        store.subscribe(update);
-                        e.target.value = '';
-                    }
-                }
+                // onKeyup: (e) => {
+                //     if (e.key === 'Enter' && e.target.value.trim()) {
+                //         store.dispatch({
+                //             type: 'ADD_TODO',
+                //             payload: {
+                //                 id: Date.now(),
+                //                 text: e.target.value.trim(),
+                //                 completed: false
+                //             }
+                //         });
+                //         store.subscribe(update);
+                //         e.target.value = '';
+                //     }
+                // }
             })
         ),
         todos.length != 0 ? createTabs() : "",
@@ -45,11 +46,11 @@ function App() {
             Didact.createElement('div', { className: 'bottom-todos' },
             Didact.createElement('button', {
                 className: 'trash-button',
-                onClick: () => {
-                    store.dispatch({
-                        type: 'DELETE_COMPLETED_TODO'
-                    })
-                }
+                // onClick: () => {
+                //     store.dispatch({
+                //         type: 'DELETE_COMPLETED_TODO'
+                //     })
+                // }
             },
                 'Clear completed'
             )
@@ -93,8 +94,54 @@ function filterTodos(todos, filter) {
 
 function update() {
     Didact.render(App(), document.getElementById('root'));
-}
+    eventEnter()
 
+    eventClickBtn()
+}
+function eventEnter(){
+    let input = document.querySelector(".todo-input")
+    addCustomEventListener(input,"keydown",(eventData)=>{
+        if ( eventData.target.value.trim()!=="" && (eventData.key === "Enter" || eventData.code === "Enter")   ) {
+            store.dispatch({
+                type: 'ADD_TODO',
+                payload: {
+                    id: Date.now(),
+                    text: eventData.target.value.trim(),
+                    completed: false
+                }
+            });
+            store.subscribe(update);
+            eventData.target.value = '';
+        }
+
+    },"keydown")
+   
+}
+function eventClickBtn(){
+    let btn = document.querySelector(".trash-button")
+    if (btn){
+        handleEvent("click", btn, "btnclrear");
+        MyEvents.on("btnclrear",(eventData)=>{
+            const clickedButton = eventData.target;
+            console.log(clickedButton,"const clickedButton = eventData.target;");
+            
+        })
+    }
+    document.querySelectorAll(".tab").forEach((button) => {
+        handleEvent("click", button, "clickbtn");
+    });
+    MyEvents.on("clickbtn", (eventData) => {
+            const clickedButton = eventData.target;
+            document.querySelectorAll(".tab").forEach((button) => {
+                button.classList.remove("active");
+            });
+            clickedButton.classList.add("active");
+            const newB = clickedButton.textContent.replace(/\s+/g, '');  // This removes all spaces
+
+            const newPath = `/${newB.toLowerCase()}`;
+            Router.navigate(newPath);
+        });
+}
 store.subscribe(update);
 
 update();
