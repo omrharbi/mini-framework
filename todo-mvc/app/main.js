@@ -38,15 +38,20 @@ function App() {
             })
         ),
         createTabs(),
-        TodoList(filteredTodos)
-        // Didact.createElement('button', { className: 'trash-button' },
-        //     Didact.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "28", height: "28", fill: "#fff", viewBox: "0 0 24 24" },
-        //         Didact.createElement('g', null,
-        //             Didact.createElement('path', { d: "M18 4h-1V3a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3v1H6a3 3 0 0 0-3 3v2a1 1 0 0 0 1 1h.069l.8 11.214A3.012 3.012 0 0 0 7.862 24h8.276a3.012 3.012 0 0 0 2.992-2.786L19.931 10H20a1 1 0 0 0 1-1V7a3 3 0 0 0-3-3ZM9 3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1H9ZM5 7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v1H5Zm12.136 14.071a1 1 0 0 1-1 .929H7.862a1 1 0 0 1-1-.929L6.074 10h11.852Z" }),
-        //             Didact.createElement('path', { d: "M10 20a1 1 0 0 0 1-1v-6a1 1 0 0 0-2 0v6a1 1 0 0 0 1 1zm4 0a1 1 0 0 0 1-1v-6a1 1 0 0 0-2 0v6a1 1 0 0 0 1 1z" })
-        //         )
-        //     )
-        // )
+        TodoList(filteredTodos),
+        Didact.createElement('div', { className: 'bottom-todos' },
+            Didact.createElement('button', {
+                className: 'trash-button',
+                onClick: () => {
+                    store.dispatch({
+                        type: 'DELETE_COMPLETED_TODO'
+                    })
+                }
+            },
+                'Clear completed'
+            )
+        )
+
     );
 }
 

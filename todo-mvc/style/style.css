@@ -205,12 +205,12 @@ body {
 
 /* Trash button */
 .trash-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  border-radius: 15px;
   background-color: var(--primary-color);
   color: white;
+  padding: 12px;
   border: none;
+  border-radius: 25px;
   font-size: 18px;
   cursor: pointer;
   display: flex;
@@ -253,4 +253,11 @@ body {
   padding: 10px 0;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all var(--transition-speed) ease;
+}
+
+.bottom-todos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 7px;
 }

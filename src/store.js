@@ -38,6 +38,11 @@ function reducer(state, action) {
                 ...state,
                 todos: state.todos.filter(todo => todo.id !== action.payload)
             };
+        case 'DELETE_COMPLETED_TODO':
+            return {
+                ...state,
+                todos: state.todos.filter(todo => !todo.completed)
+            };
         case 'SET_FILTER':
             return { ...state, filter: action.payload };
         default:
