@@ -10,9 +10,11 @@ const store = createStore(initialState);
 
 function App() {
     const { todos, filter } = store.getState();
-    console.log(filter); // catkon 'all' fe bdya mn b3d o nbdloha
+    console.log('filter', filter); // catkon 'all' fe bdya mn b3d o nbdloha
+    console.log('todos', todos);
+    
 
-    const filteredTodos = filterTodos(todos, filter);
+    const filteredTodos = filterTodos(todos, filter);    
 
     return Didact.createElement('div', { className: 'todo-container' },
         Didact.createElement('h1', { className: 'title' }, 'TODOS'),
@@ -37,9 +39,10 @@ function App() {
                 }
             })
         ),
-        createTabs(),
-        TodoList(filteredTodos),
-        Didact.createElement('div', { className: 'bottom-todos' },
+        todos.length != 0 ? createTabs() : "",
+            TodoList(filteredTodos),
+        todos.length != 0 ?
+            Didact.createElement('div', { className: 'bottom-todos' },
             Didact.createElement('button', {
                 className: 'trash-button',
                 onClick: () => {
@@ -50,8 +53,7 @@ function App() {
             },
                 'Clear completed'
             )
-        )
-
+            ) : "",
     );
 }
 
