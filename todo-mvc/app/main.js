@@ -46,11 +46,11 @@ function App() {
             Didact.createElement('div', { className: 'bottom-todos' },
             Didact.createElement('button', {
                 className: 'trash-button',
-                // onClick: () => {
-                //     store.dispatch({
-                //         type: 'DELETE_COMPLETED_TODO'
-                //     })
-                // }
+                onClick: () => {
+                    store.dispatch({
+                        type: 'DELETE_COMPLETED_TODO'
+                    })
+                }
             },
                 'Clear completed'
             )
@@ -117,6 +117,7 @@ function eventEnter(){
     },"keydown")
    
 }
+
 function eventClickBtn(){
     let btn = document.querySelector(".trash-button")
     if (btn){
