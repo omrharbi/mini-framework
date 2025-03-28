@@ -1,7 +1,4 @@
-import { createRouter } from "./Router.js";
-// Créer une instance globale du routeur
-window.Router = createRouter();
-export  const MyEvents = {
+export const MyEvents = {
     events: {},
     on(event, callback) {
         if (!this.events[event]) this.events[event] = [];
@@ -14,7 +11,7 @@ export  const MyEvents = {
     },
 };
 
-export  function handleEvent(eventType, domElement, customEventName) {
+export function handleEvent(eventType, domElement, customEventName) {
 
     domElement[`on${eventType}`] = (event) => {
         const eventData = {
@@ -39,7 +36,7 @@ export  function handleEvent(eventType, domElement, customEventName) {
 
         MyEvents.trigger(customEventName || eventType, eventData);
     };
- }
+}
 
 export function addCustomEventListener(domElement, eventType, callback, customEventName) {
     // Register the callback with MyEvents

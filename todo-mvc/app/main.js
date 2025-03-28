@@ -1,6 +1,17 @@
 import { Didact } from '../../src/CreateElement.js';
-import  { MyEvents,addCustomEventListener,handleEvent } from '../../src/eventlistenner.js';
+import { MyEvents, addCustomEventListener, handleEvent } from '../../src/eventlistenner.js';
 import { createStore } from '../../src/store.js';
+import { createRouter } from '../../src/Router.js';
+function throttle(func, delay) {
+    let lastCall = 0;
+    return function (...args) {
+        const now = Date.now();
+        if (now - lastCall >= delay) {
+            lastCall = now;
+            func(...args);
+        }
+    };
+}
 
 const initialState = {
     todos: [],
@@ -8,15 +19,25 @@ const initialState = {
 };
 
 const store = createStore(initialState);
+const router = createRouter()
+
 
 function App() {
+    if (initialState.length == 0 && router.getPath !== "/todo-mvc") {
+        router.navigate("/todo-mvc")
+    }
     const { todos, filter } = store.getState();
-    console.log('filter', filter); // catkon 'all' fe bdya mn b3d o nbdloha
-    console.log('todos', todos);
-   
-
-    const filteredTodos = filterTodos(todos, filter);    
-
+    // console.log('filter', filter); // catkon 'all' fe bdya mn b3d o nbdloha    
+    const pathname = router.getPath()
+    let filteredTodos = filterTodos(todos, filter);
+    if (pathname === "/todo-mvc/active") {
+        filteredTodos = filterTodos(todos, "active");
+    } else if (pathname === "/todo-mvc/completed") {
+        filteredTodos = filterTodos(todos, "completed");
+    } else if (pathname === "/todo-mvc/alltodos") {
+        filteredTodos = filterTodos(todos, "alltodos");
+    }
+    
     return Didact.createElement('div', { className: 'todo-container' },
         Didact.createElement('h1', { className: 'title' }, 'TODOS'),
         Didact.createElement('div', { className: 'todo-header' },
@@ -41,19 +62,19 @@ function App() {
             })
         ),
         todos.length != 0 ? createTabs() : "",
-            TodoList(filteredTodos),
+        TodoList(filteredTodos),
         todos.length != 0 ?
             Didact.createElement('div', { className: 'bottom-todos' },
-            Didact.createElement('button', {
-                className: 'trash-button',
-                onClick: () => {
-                    store.dispatch({
-                        type: 'DELETE_COMPLETED_TODO'
-                    })
-                }
-            },
-                'Clear completed'
-            )
+                Didact.createElement('button', {
+                    className: 'trash-button',
+                    onClick: () => {
+                        store.dispatch({
+                            type: 'DELETE_COMPLETED_TODO'
+                        })
+                    }
+                },
+                    'Clear completed'
+                )
             ) : "",
     );
 }
@@ -98,10 +119,10 @@ function update() {
 
     eventClickBtn()
 }
-function eventEnter(){
+function eventEnter() {
     let input = document.querySelector(".todo-input")
-    addCustomEventListener(input,"keydown",(eventData)=>{
-        if ( eventData.target.value.trim()!=="" && (eventData.key === "Enter" || eventData.code === "Enter")   ) {
+    addCustomEventListener(input, "keydown", (eventData) => {
+        if (eventData.target.value.trim() !== "" && (eventData.key === "Enter" || eventData.code === "Enter")) {
             store.dispatch({
                 type: 'ADD_TODO',
                 payload: {
@@ -114,34 +135,35 @@ function eventEnter(){
             eventData.target.value = '';
         }
 
-    },"keydown")
-   
+    }, "keydown")
+
 }
 
-function eventClickBtn(){
+function eventClickBtn() {
     let btn = document.querySelector(".trash-button")
-    if (btn){
+    if (btn) {
         handleEvent("click", btn, "btnclrear");
-        MyEvents.on("btnclrear",(eventData)=>{
+        MyEvents.on("btnclrear", (eventData) => {
             const clickedButton = eventData.target;
-            console.log(clickedButton,"const clickedButton = eventData.target;");
-            
+            console.log(clickedButton, "const clickedButton = eventData.target;");
+
         })
     }
     document.querySelectorAll(".tab").forEach((button) => {
         handleEvent("click", button, "clickbtn");
     });
     MyEvents.on("clickbtn", (eventData) => {
-            const clickedButton = eventData.target;
-            document.querySelectorAll(".tab").forEach((button) => {
-                button.classList.remove("active");
-            });
-            clickedButton.classList.add("active");
-            const newB = clickedButton.textContent.replace(/\s+/g, '');  // This removes all spaces
-
-            const newPath = `/${newB.toLowerCase()}`;
-            Router.navigate(newPath);
+        const clickedButton = eventData.target;
+        document.querySelectorAll(".tab").forEach((button) => {
+            button.classList.remove("active");
         });
+        clickedButton.classList.add("active");
+        const newB = "todo-mvc/" + clickedButton.textContent.replace(/\s+/g, '');  // This removes all spaces
+        const newPath = `/${newB.toLowerCase()}`;
+        const throttledNavigate = throttle(router.navigate, 500); // 500ms throttle        
+        throttledNavigate(newPath);
+        update()
+    });
 }
 store.subscribe(update);
 
