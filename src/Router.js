@@ -24,7 +24,7 @@ export function createRouter() {
     }
     // async function loadContent(path) {
     //     console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
-        
+
     //     // Call the registered loadContent function for the route if it exists
     //     if (routes[path]) {
     //         try {
@@ -40,7 +40,7 @@ export function createRouter() {
     // Add a listener for route changes
     function onRouteChange(listener) {
         listeners.add(listener);
-        
+
         // Return a cleanup function to remove the listener
         return () => listeners.delete(listener);
     }
@@ -53,5 +53,5 @@ export function createRouter() {
     });
     // loadContent(getPath());
 
-    return { getPath, navigate, onRouteChange, registerRoute, loadContent };
+    return { getPath, navigate, onRouteChange, registerRoute };
 }
