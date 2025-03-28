@@ -3,42 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Router Test</title>
+    <link rel="stylesheet" href="./css/general.css">
+    <script type="module" src="./src/main.js"></script>
 </head>
 <body>
-    <div id="app"></div>
-    <script type="module">
-        import { h } from './src/dom.js';
-        import { Router } from './src/router.js';
-
-       
-        function HomePage() {
-            return h('div', {},
-            h('h1', {}, 'Home Page'),
-            h('p', {}, 'Welcome to the home page!')
-            );
-        }
-
-     
-        function AboutPage() {
-            return h('div', {},
-            h('h1', {}, 'About Page'),
-            h('p', {}, 'Learn more about us.')
-            );
-        }
-
-        function Navigation() {
-            return h('nav', {},
-            h('a', { href: '/' }, 'Home'),
-            h('a', { href: '/about' }, 'About')
-            );
-        }
-
-        const router = new Router({
-            '/': () => [Navigation(), HomePage()],
-            '/about': () => [Navigation(), AboutPage()]
-        });
-
-        router.init();
-    </script>
 </body>
 </html>

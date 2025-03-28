@@ -1,0 +1,39 @@
+/* style for the body */
+body {
+    margin: 0;
+}
+/* style for not found page */
+.not-found-container {
+    text-align: center;
+    padding: 100px 20px;
+    background-color: black;
+}
+
+.not-found-title {
+    font-size: 8rem;
+    color: #ff4757;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.not-found-text {
+    font-size: 1.5rem;
+    color: #2f3542;
+    margin: 20px 0;
+}
+
+.home-link {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #3742fa;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.home-link:hover {
+    background: #5352ed;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
