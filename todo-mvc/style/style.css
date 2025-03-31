@@ -166,17 +166,21 @@ body {
 
 /* Tab buttons */
 .tab {
-  flex: 1;
+  width: 100%;
   padding: 12px;
-  text-align: center;
   background-color: var(--hover-color);
   border: none;
-  border-radius: 25px;
-  margin: 0 5px;
   cursor: pointer;
   font-size: 16px;
+  border-radius: 25px;
   color: var(--primary-color);
   transition: all var(--transition-speed) ease;
+}
+
+.tab-container a {
+  flex: 1;
+  text-align: center;
+  margin: 0 5px;
 }
 
 .tab.active {

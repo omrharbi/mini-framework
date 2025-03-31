@@ -1,17 +1,7 @@
 import { Didact } from '../../src/CreateElement.js';
-import { MyEvents, addCustomEventListener, handleEvent } from '../../src/eventlistenner.js';
+import { addCustomEventListener } from '../../src/eventlistenner.js';
 import { createStore } from '../../src/store.js';
 import { createRouter } from '../../src/Router.js';
-function throttle(func, delay) {
-    let lastCall = 0;
-    return function (...args) {
-        const now = Date.now();
-        if (now - lastCall >= delay) {
-            lastCall = now;
-            func(...args);
-        }
-    };
-}
 
 const initialState = {
     todos: [],
@@ -20,21 +10,21 @@ const initialState = {
 
 const store = createStore(initialState);
 const router = createRouter()
+let pathname = router.getHashPath()
 
+window.addEventListener('hashchange', () => {
+    pathname = router.getHashPath();
+    update();
+});
 
 function App() {
-    if (initialState.length == 0 && router.getPath !== "/todo-mvc") {
-        router.navigate("/todo-mvc")
-    }
     const { todos, filter } = store.getState();
-    // console.log('filter', filter); // catkon 'all' fe bdya mn b3d o nbdloha    
-    const pathname = router.getPath()
     let filteredTodos = filterTodos(todos, filter);
-    if (pathname === "/todo-mvc/active") {
-        filteredTodos = filterTodos(todos, "active");
-    } else if (pathname === "/todo-mvc/completed") {
-        filteredTodos = filterTodos(todos, "completed");
-    } else if (pathname === "/todo-mvc/alltodos") {
+    if (pathname === "#/active") {
+        filteredTodos = filterTodos(todos, 'active');
+    } else if (pathname === "#/completed") {
+        filteredTodos = filterTodos(todos, 'completed');
+    } else if (pathname === "#/") {
         filteredTodos = filterTodos(todos, "alltodos");
     }
     
@@ -98,10 +88,22 @@ function TodoList(todos) {
 }
 
 function createTabs() {
-    return Didact.createElement('div', { className: 'tab-container' },
-        Didact.createElement('button', { className: 'tab' }, 'Active'),
-        Didact.createElement('button', { className: 'tab' }, 'Completed'),
-        Didact.createElement('button', { className: 'tab' }, 'All todos')
+    return Didact.createElement('div', { className: 'tab-container '},
+        Didact.createElement('a', { href: '#/',
+            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'all'})
+         },
+            Didact.createElement('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All todos')
+        ),
+        Didact.createElement('a', { href: '#/active',
+            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'active'})
+         },
+            Didact.createElement('button', { className: `tab ${pathname === '#/active' ? 'active' : ''}` }, 'Active')
+        ),
+        Didact.createElement('a', { href: '#/completed',
+            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'completed'})
+         },
+            Didact.createElement('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}`}, 'Completed')
+        )
     );
 }
 
@@ -116,9 +118,8 @@ function filterTodos(todos, filter) {
 function update() {
     Didact.render(App(), document.getElementById('root'));
     eventEnter()
-
-    eventClickBtn()
 }
+
 function eventEnter() {
     let input = document.querySelector(".todo-input")
     addCustomEventListener(input, "keydown", (eventData) => {
@@ -136,35 +137,8 @@ function eventEnter() {
         }
 
     }, "keydown")
-
 }
 
-function eventClickBtn() {
-    let btn = document.querySelector(".trash-button")
-    if (btn) {
-        handleEvent("click", btn, "btnclrear");
-        MyEvents.on("btnclrear", (eventData) => {
-            const clickedButton = eventData.target;
-            console.log(clickedButton, "const clickedButton = eventData.target;");
-
-        })
-    }
-    document.querySelectorAll(".tab").forEach((button) => {
-        handleEvent("click", button, "clickbtn");
-    });
-    MyEvents.on("clickbtn", (eventData) => {
-        const clickedButton = eventData.target;
-        document.querySelectorAll(".tab").forEach((button) => {
-            button.classList.remove("active");
-        });
-        clickedButton.classList.add("active");
-        const newB = "todo-mvc/" + clickedButton.textContent.replace(/\s+/g, '');  // This removes all spaces
-        const newPath = `/${newB.toLowerCase()}`;
-        const throttledNavigate = throttle(router.navigate, 500); // 500ms throttle        
-        throttledNavigate(newPath);
-        update()
-    });
-}
 store.subscribe(update);
 
 update();

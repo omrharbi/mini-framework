@@ -6,6 +6,11 @@ export function createRouter() {
         return window.location.pathname;
     }
 
+    // return the hash in the path
+    function getHashPath () {
+        return window.location.hash
+    }
+
     // Register a new route with a loadContent function
     function registerRoute(path, loadContentFn) {
         routes[path] = loadContentFn;
@@ -46,12 +51,12 @@ export function createRouter() {
     }
 
     // Handle the back and forward buttons in the browser (popstate event)
-    window.addEventListener("popstate", () => {
-        const currentPath = getPath();
-        loadContent(currentPath);
-        listeners.forEach(listener => listener(currentPath));
-    });
+    // window.addEventListener("popstate", () => {
+    //     const currentPath = getPath();
+    //     loadContent(currentPath);
+    //     listeners.forEach(listener => listener(currentPath));
+    // });
     // loadContent(getPath());
 
-    return { getPath, navigate, onRouteChange, registerRoute };
+    return { getPath, getHashPath, navigate, onRouteChange, registerRoute };
 }
