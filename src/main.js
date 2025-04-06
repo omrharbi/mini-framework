@@ -1,6 +1,6 @@
-import { h } from './dom.js';
-import { Router } from './router.js';
-import { HomePage } from './pages/home.js';
+import { h } from './core/dom.js';
+import { Router } from './core/router.js';
+import { HomePage } from './app/home.js';
 
 
 
