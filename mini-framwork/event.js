@@ -12,7 +12,7 @@ export const MyEvents = {
 };
 
 export function handleEvent(eventType, domElement, customEventName) {
-
+     
     domElement[`on${eventType}`] = (event) => {
         const eventData = {
             type: event.type, //
