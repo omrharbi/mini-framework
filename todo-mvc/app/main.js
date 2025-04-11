@@ -1,7 +1,7 @@
 import { Didact } from '../../src/CreateElement.js';
-import { addCustomEventListener } from '../../src/eventlistenner.js';
 import { createStore } from '../../src/store.js';
 import { createRouter } from '../../src/Router.js';
+import { jsx, render, setApp } from '../../mini-framwork/framework.js';
 
 const initialState = {
     todos: [],
@@ -17,7 +17,7 @@ window.addEventListener('hashchange', () => {
     update();
 });
 
-function App() {
+export function App() {
     const { todos, filter } = store.getState();
     let filteredTodos = filterTodos(todos, filter);
     if (pathname === "#/active") {
@@ -28,34 +28,34 @@ function App() {
         filteredTodos = filterTodos(todos, "alltodos");
     }
     
-    return Didact.createElement('div', { className: 'todo-container' },
-        Didact.createElement('h1', { className: 'title' }, 'TODOS'),
-        Didact.createElement('div', { className: 'todo-header' },
-            Didact.createElement('input', {
+    return jsx('div', { className: 'todo-container' },
+            jsx('h1', { className: 'title' }, 'TODOS'),
+            jsx('div', { className: 'todo-header' },
+            jsx('input', {
                 type: 'text',
                 className: 'todo-input',
                 placeholder: 'What needs to be done?',
-                // onKeyup: (e) => {
-                //     if (e.key === 'Enter' && e.target.value.trim()) {
-                //         store.dispatch({
-                //             type: 'ADD_TODO',
-                //             payload: {
-                //                 id: Date.now(),
-                //                 text: e.target.value.trim(),
-                //                 completed: false
-                //             }
-                //         });
-                //         store.subscribe(update);
-                //         e.target.value = '';
-                //     }
-                // }
+                onKeyup: (e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                        store.dispatch({
+                            type: 'ADD_TODO',
+                            payload: {
+                                id: Date.now(),
+                                text: e.target.value.trim(),
+                                completed: false
+                            }
+                        });
+                         update()
+                         e.target.value = '';
+                    }
+                }
             })
         ),
-        todos.length != 0 ? createTabs() : "",
+        todos.length != 0 ? createTabs() : "", 
         TodoList(filteredTodos),
         todos.length != 0 ?
-            Didact.createElement('div', { className: 'bottom-todos' },
-                Didact.createElement('button', {
+            jsx('div', { className: 'bottom-todos' },
+                jsx('button', {
                     className: 'trash-button',
                     onClick: () => {
                         store.dispatch({
@@ -69,16 +69,16 @@ function App() {
     );
 }
 
-function TodoList(todos) {
-    return Didact.createElement('div', { className: 'todo-list' },
+function TodoList(todos) { 
+    return jsx('div', { className: 'todo-list' },
         ...todos.map(todo =>
-            Didact.createElement('div', { className: `todo-item ${todo.completed ? 'completed' : ''}` },
-                Didact.createElement('div', {
+            jsx('div', { className: `todo-item ${todo.completed ? 'completed' : ''}` },
+                jsx('div', {
                     className: `todo-checkbox ${todo.completed ? 'checked' : ''}`,
                     onClick: () => store.dispatch({ type: 'TOGGLE_TODO', payload: todo.id })
                 }),
-                Didact.createElement('div', { className: 'todo-text', style: `${todo.completed ? 'text-decoration: line-through;' : ''}` }, todo.text),
-                Didact.createElement('button', {
+                jsx('div', { className: 'todo-text', style: `${todo.completed ? 'text-decoration: line-through;' : ''}` }, todo.text),
+                jsx('button', {
                     className: 'delete-button',
                     onClick: () => store.dispatch({ type: 'DELETE_TODO', payload: todo.id })
                 }, '×')
@@ -88,21 +88,21 @@ function TodoList(todos) {
 }
 
 function createTabs() {
-    return Didact.createElement('div', { className: 'tab-container '},
-        Didact.createElement('a', { href: '#/',
+    return jsx('div', { className: 'tab-container '},
+        jsx('a', { href: '#/',
             onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'all'})
          },
-            Didact.createElement('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All todos')
+            jsx('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All todos')
         ),
-        Didact.createElement('a', { href: '#/active',
+        jsx('a', { href: '#/active',
             onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'active'})
          },
-            Didact.createElement('button', { className: `tab ${pathname === '#/active' ? 'active' : ''}` }, 'Active')
+            jsx('button', { className: `tab ${pathname === '#/active' ? 'active' : ''}` }, 'Active')
         ),
-        Didact.createElement('a', { href: '#/completed',
+        jsx('a', { href: '#/completed',
             onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'completed'})
          },
-            Didact.createElement('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}`}, 'Completed')
+            jsx('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}`}, 'Completed')
         )
     );
 }
@@ -116,29 +116,31 @@ function filterTodos(todos, filter) {
 }
 
 function update() {
-    Didact.render(App(), document.getElementById('root'));
-    eventEnter()
+    setApp(App)
+    render();
+    // Didact.render(App(), document.getElementById('root'));
+    // eventEnter()
 }
-
-function eventEnter() {
-    let input = document.querySelector(".todo-input")
-    addCustomEventListener(input, "keydown", (eventData) => {
-        if (eventData.target.value.trim() !== "" && (eventData.key === "Enter" || eventData.code === "Enter")) {
-            store.dispatch({
-                type: 'ADD_TODO',
-                payload: {
-                    id: Date.now(),
-                    text: eventData.target.value.trim(),
-                    completed: false
-                }
-            });
-            store.subscribe(update);
-            eventData.target.value = '';
-        }
-
-    }, "keydown")
-}
-
-store.subscribe(update);
-
 update();
+
+// export function eventEnter() {
+//     let input = document.querySelector(".todo-input")
+//     addCustomEventListener(input, "keydown", (eventData) => {
+//         if (eventData.target.value.trim() !== "" && (eventData.key === "Enter" || eventData.code === "Enter")) {
+//             store.dispatch({
+//                 type: 'ADD_TODO',
+//                 payload: {
+//                     id: Date.now(),
+//                     text: eventData.target.value.trim(),
+//                     completed: false
+//                 }
+//             });
+//             store.subscribe(update);
+//             eventData.target.value = '';
+//         }
+
+//     }, "keydown")
+// }
+
+// store.subscribe(update);
+

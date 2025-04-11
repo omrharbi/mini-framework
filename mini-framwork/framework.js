@@ -72,7 +72,6 @@ const Framework = (function () {
     const root = document.getElementById("root");
     root.innerHTML = "";
     const app = App();
-    console.log(app);
     root.appendChild(createElement(app));
   }
   let App;

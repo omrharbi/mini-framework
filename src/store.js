@@ -20,6 +20,8 @@ export function createStore(initialState) {
 }
 
 function reducer(state, action) {
+    console.log(state,action);
+    
     switch (action.type) {
         case 'ADD_TODO':
             return {
