@@ -20,6 +20,7 @@ window.addEventListener('hashchange', () => {
 export function App() {
     const { todos, filter } = store.getState();
     let filteredTodos = filterTodos(todos, filter);
+
     if (pathname === "#/active") {
         filteredTodos = filterTodos(todos, 'active');
     } else if (pathname === "#/completed") {
@@ -27,10 +28,10 @@ export function App() {
     } else if (pathname === "#/") {
         filteredTodos = filterTodos(todos, "alltodos");
     }
-    
+
     return jsx('div', { className: 'todo-container' },
-            jsx('h1', { className: 'title' }, 'TODOS'),
-            jsx('div', { className: 'todo-header' },
+        jsx('h1', { className: 'title' }, 'TODOS'),
+        jsx('div', { className: 'todo-header' },
             jsx('input', {
                 type: 'text',
                 className: 'todo-input',
@@ -45,27 +46,26 @@ export function App() {
                                 completed: false
                             }
                         });
-                         update()
-                         e.target.value = '';
+                        update();
+                        e.target.value = '';
                     }
                 }
             })
         ),
-        todos.length != 0 ? createTabs() : "", 
+        todos.length !== 0 ? createTabs() : "",
         TodoList(filteredTodos),
-        todos.length != 0 ?
+        todos.length !== 0 ?
             jsx('div', { className: 'bottom-todos' },
                 jsx('button', {
                     className: 'trash-button',
                     onClick: () => {
                         store.dispatch({
                             type: 'DELETE_COMPLETED_TODO'
-                        })
+                        });
+                        update();
                     }
-                },
-                    'Clear completed'
-                )
-            ) : "",
+                }, 'Clear completed')
+            ) : ""
     );
 }
 
@@ -88,43 +88,47 @@ function TodoList(todos) {
 }
 
 function createTabs() {
-    return jsx('div', { className: 'tab-container '},
-        jsx('a', { href: '#/',
-            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'all'})
-         },
+    return jsx('div', { className: 'tab-container' },
+        jsx('a', {
+            href: '#/',
+            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'all' })
+        },
             jsx('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All todos')
         ),
-        jsx('a', { href: '#/active',
-            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'active'})
-         },
+        jsx('a', {
+            href: '#/active',
+            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'active' })
+        },
             jsx('button', { className: `tab ${pathname === '#/active' ? 'active' : ''}` }, 'Active')
         ),
-        jsx('a', { href: '#/completed',
-            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'completed'})
-         },
-            jsx('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}`}, 'Completed')
+        jsx('a', {
+            href: '#/completed',
+            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'completed' })
+        },
+            jsx('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}` }, 'Completed')
         )
     );
 }
 
 function filterTodos(todos, filter) {
     switch (filter) {
-        case 'active': return todos.filter(t => !t.completed);
-        case 'completed': return todos.filter(t => t.completed);
-        default: return todos;
+        case 'active':
+            return todos.filter(t => !t.completed);
+        case 'completed':
+            return todos.filter(t => t.completed);
+        default:
+            return todos;
     }
 }
 
 function update() {
-    setApp(App)
-    render();
-    // Didact.render(App(), document.getElementById('root'));
-    // eventEnter()
+    render(App(), document.getElementById('root'));
 }
 update();
 
+// Optional old code for reference or testing:
 // export function eventEnter() {
-//     let input = document.querySelector(".todo-input")
+//     let input = document.querySelector(".todo-input");
 //     addCustomEventListener(input, "keydown", (eventData) => {
 //         if (eventData.target.value.trim() !== "" && (eventData.key === "Enter" || eventData.code === "Enter")) {
 //             store.dispatch({
@@ -138,9 +142,7 @@ update();
 //             store.subscribe(update);
 //             eventData.target.value = '';
 //         }
-
-//     }, "keydown")
+//     }, "keydown");
 // }
 
 // store.subscribe(update);
-

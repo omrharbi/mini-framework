@@ -1,53 +1,59 @@
 import { addCustomEventListener } from "./event.js";
 
-  
 const Framework = (function () {
   const state = [];
   let stateIndex = 0;
+
   function useState(initialValue) {
     const currentIndex = stateIndex;
     state[currentIndex] = state[currentIndex] !== undefined ? state[currentIndex] : initialValue;
+
     function setState(newValue) {
       state[currentIndex] = newValue;
-        render();
+      render();
     }
-    
+
     return [state[currentIndex], setState];
   }
- 
+
   let effects = [];
   let effectsIndex = 0;
+
   function useEffect(callback, dependency) {
     let oldDependency = effects[effectsIndex];
     let hasChanged = true;
-    if (oldDependency) {
+
+    if (oldDependency) { 
       hasChanged = dependency.some(
         (dep, i) => !Object.is(dep, oldDependency[i])
       );
     }
+
     if (hasChanged) {
       callback();
     }
+
     effects[effectsIndex] = dependency;
     effectsIndex++;
   }
+
   function jsx(tags, props, ...children) {
     if (typeof tags === "function") {
       return { ...props, children };
     }
- 
+
     return { tags, props: props || {}, children };
   }
+
   function createElement(node) {
     if (typeof node === "string" || typeof node === "number") {
       return document.createTextNode(String(node));
     }
- 
+
     const element = document.createElement(node.tags);
     for (let [name, value] of Object.entries(node.props)) {
       if (name.startsWith("on") && typeof value === "function") {
-        addCustomEventListener(element,name.slice(2).toLowerCase(),value,"click")
-        // element.addEventListener(name.slice(2).toLowerCase(), value);
+        addCustomEventListener(element, name.slice(2).toLowerCase(), value, "click"); // 👈🏻 tanchofha mn b3d
       } else if (name === "className") {
         element.className = value;
       } else if (name === "id") {
@@ -56,7 +62,7 @@ const Framework = (function () {
         element.setAttribute(name, value);
       }
     }
- 
+
     for (let child of node.children.flat()) {
       if (typeof child === "string" || typeof child === "number") {
         element.appendChild(document.createTextNode(String(child)));
@@ -64,18 +70,31 @@ const Framework = (function () {
         element.appendChild(createElement(child));
       }
     }
+
     return element;
   }
-  function render() {
+
+  function render(vnode, parent) {
     // stateIndex = 0; 
     // effectsIndex = 0;
-    const root = document.getElementById("root");
-    root.innerHTML = "";
-    const app = App();
-    root.appendChild(createElement(app));
+    // const root = document.getElementById("root");
+    // root.innerHTML = "";
+    // const app = App();
+    parent.appendChild(createElement(vnode));
   }
+
   let App;
-   return { useState, useEffect, jsx, createElement, render   , setApp: function (app) {App = app; },};
+
+  return {
+    useState,
+    useEffect,
+    jsx,
+    createElement,
+    render,
+    setApp: function (app) {
+      App = app;
+    },
+  };
 })();
 
-export   const { useState, useEffect, jsx, createElement, render ,setApp} = Framework;
+export const { useState, useEffect, jsx, createElement, render, setApp } = Framework;
