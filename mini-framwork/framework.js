@@ -10,23 +10,22 @@ const Framework = (function () {
 
     function setState(newValue) {
       state[currentIndex] = newValue;
-      render();
+      rerender();
     }
 
+    stateIndex++;
     return [state[currentIndex], setState];
   }
 
-  let effects = [];
+  const effects = [];
   let effectsIndex = 0;
 
   function useEffect(callback, dependency) {
-    let oldDependency = effects[effectsIndex];
+    const oldDependency = effects[effectsIndex];
     let hasChanged = true;
 
-    if (oldDependency) { 
-      hasChanged = dependency.some(
-        (dep, i) => !Object.is(dep, oldDependency[i])
-      );
+    if (oldDependency) {
+      hasChanged = dependency.some((dep, i) => !Object.is(dep, oldDependency[i]));
     }
 
     if (hasChanged) {
@@ -37,23 +36,24 @@ const Framework = (function () {
     effectsIndex++;
   }
 
-  function jsx(tags, props, ...children) {
-    if (typeof tags === "function") {
-      return { ...props, children };
+  function jsx(tag, props, ...children) {
+    if (typeof tag === "function") {
+      return tag({ ...props, children });
     }
 
-    return { tags, props: props || {}, children };
+    return { tag, props: props || {}, children };
   }
 
   function createElement(node) {
-    if (typeof node === "string" || typeof node === "number") {
-      return document.createTextNode(String(node));
+    if (["string", "number"].includes(typeof node)) {
+      return document.createTextNode(node.toString());
     }
 
-    const element = document.createElement(node.tags);
-    for (let [name, value] of Object.entries(node.props)) {
+    const element = document.createElement(node.tag);
+
+    for (const [name, value] of Object.entries(node.props)) {
       if (name.startsWith("on") && typeof value === "function") {
-        addCustomEventListener(element, name.slice(2).toLowerCase(), value, "click"); // 👈🏻 tanchofha mn b3d
+        addCustomEventListener(element, name.slice(2).toLowerCase(), value);
       } else if (name === "className") {
         element.className = value;
       } else if (name === "id") {
@@ -63,27 +63,32 @@ const Framework = (function () {
       }
     }
 
-    for (let child of node.children.flat()) {
-      if (typeof child === "string" || typeof child === "number") {
-        element.appendChild(document.createTextNode(String(child)));
-      } else {
-        element.appendChild(createElement(child));
-      }
+    for (const child of node.children.flat()) {
+      element.appendChild(createElement(child));
     }
 
     return element;
   }
 
-  function render(vnode, parent) {
-    // stateIndex = 0; 
-    // effectsIndex = 0;
-    // const root = document.getElementById("root");
-    // root.innerHTML = "";
-    // const app = App();
-    parent.appendChild(createElement(vnode));
+  let rootContainer = null;
+  let App = null;
+
+  function rerender() {
+    if (rootContainer && App) {
+      stateIndex = 0;
+      effectsIndex = 0;
+      rootContainer.innerHTML = "";
+      const vnode = App;
+      const dom = createElement(vnode);
+      rootContainer.appendChild(dom);
+    }
   }
 
-  let App;
+  function render(component, container) {
+    App = component;
+    rootContainer = container;
+    rerender();
+  }
 
   return {
     useState,
