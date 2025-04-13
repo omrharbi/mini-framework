@@ -1,6 +1,6 @@
 import { createStore } from '../../src/store.js';
 import { createRouter } from '../../src/Router.js';
-import { jsx, render, setApp } from '../../mini-framwork/framework.js';
+import { jsx, render } from '../../src/framework.js';
 
 const initialState = {
     todos: [],
