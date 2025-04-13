@@ -1,4 +1,3 @@
-import { Didact } from '../../src/CreateElement.js';
 import { createStore } from '../../src/store.js';
 import { createRouter } from '../../src/Router.js';
 import { jsx, render, setApp } from '../../mini-framwork/framework.js';
@@ -9,8 +8,12 @@ const initialState = {
 };
 
 const store = createStore(initialState);
-const router = createRouter()
-let pathname = router.getHashPath()
+const router = createRouter();
+let pathname = router.getHashPath();
+
+store.subscribe(() => {
+    update();
+});
 
 window.addEventListener('hashchange', () => {
     pathname = router.getHashPath();
@@ -26,7 +29,7 @@ export function App() {
     } else if (pathname === "#/completed") {
         filteredTodos = filterTodos(todos, 'completed');
     } else if (pathname === "#/") {
-        filteredTodos = filterTodos(todos, "alltodos");
+        filteredTodos = filterTodos(todos, "all");
     }
 
     return jsx('div', { className: 'todo-container' },
@@ -46,7 +49,6 @@ export function App() {
                                 completed: false
                             }
                         });
-                        update();
                         e.target.value = '';
                     }
                 }
@@ -62,7 +64,6 @@ export function App() {
                         store.dispatch({
                             type: 'DELETE_COMPLETED_TODO'
                         });
-                        update();
                     }
                 }, 'Clear completed')
             ) : ""
@@ -72,7 +73,7 @@ export function App() {
 function TodoList(todos) { 
     return jsx('div', { className: 'todo-list' },
         ...todos.map(todo =>
-            jsx('div', { className: `todo-item ${todo.completed ? 'completed' : ''}` },
+            jsx('div', { className: `todo-item ${todo.completed ? 'completed' : ''}`, key: todo.id },
                 jsx('div', {
                     className: `todo-checkbox ${todo.completed ? 'checked' : ''}`,
                     onClick: () => store.dispatch({ type: 'TOGGLE_TODO', payload: todo.id })
@@ -91,19 +92,19 @@ function createTabs() {
     return jsx('div', { className: 'tab-container' },
         jsx('a', {
             href: '#/',
-            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'all' })
+            onClick: () => { store.dispatch({ type: 'SET_FILTER', payload: 'all' }) }
         },
-            jsx('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All todos')
+            jsx('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All')
         ),
         jsx('a', {
             href: '#/active',
-            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'active' })
+            onClick: () => { store.dispatch({ type: 'SET_FILTER', payload: 'active' }) }
         },
             jsx('button', { className: `tab ${pathname === '#/active' ? 'active' : ''}` }, 'Active')
         ),
         jsx('a', {
             href: '#/completed',
-            onClick: () => store.dispatch({ type: 'SET_FILTER', payload: 'completed' })
+            onClick: () => { store.dispatch({ type: 'SET_FILTER', payload: 'completed' }) }
         },
             jsx('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}` }, 'Completed')
         )
