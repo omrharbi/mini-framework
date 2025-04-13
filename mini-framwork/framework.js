@@ -36,12 +36,12 @@ const Framework = (function () {
     effectsIndex++;
   }
 
-  function jsx(tag, props, ...children) {
+  function jsx(tag, attrs, ...children) {
     if (typeof tag === "function") {
-      return tag({ ...props, children });
+      return tag({ ...attrs, children });
     }
 
-    return { tag, props: props || {}, children };
+    return { tag, attrs: attrs || {}, children };
   }
 
   function createElement(node) {
@@ -51,7 +51,7 @@ const Framework = (function () {
 
     const element = document.createElement(node.tag);
 
-    for (const [key, value] of Object.entries(node.props)) {
+    for (const [key, value] of Object.entries(node.attrs)) {
       if (key.startsWith("on") && typeof value === "function") {
         // addCustomEventListener(element, key.slice(2).toLowerCase(), value); // 👈🏼 hade event li drti a omar welah ma fhmt 7aja
         const event = key.slice(2).toLowerCase();
