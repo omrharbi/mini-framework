@@ -124,25 +124,5 @@ function filterTodos(todos, filter) {
 function update() {
     render(App(), document.getElementById('root'));
 }
+
 update();
-
-// Optional old code for reference or testing:
-// export function eventEnter() {
-//     let input = document.querySelector(".todo-input");
-//     addCustomEventListener(input, "keydown", (eventData) => {
-//         if (eventData.target.value.trim() !== "" && (eventData.key === "Enter" || eventData.code === "Enter")) {
-//             store.dispatch({
-//                 type: 'ADD_TODO',
-//                 payload: {
-//                     id: Date.now(),
-//                     text: eventData.target.value.trim(),
-//                     completed: false
-//                 }
-//             });
-//             store.subscribe(update);
-//             eventData.target.value = '';
-//         }
-//     }, "keydown");
-// }
-
-// store.subscribe(update);

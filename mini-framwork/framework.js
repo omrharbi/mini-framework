@@ -51,17 +51,19 @@ const Framework = (function () {
 
     const element = document.createElement(node.tag);
 
-    for (const [name, value] of Object.entries(node.props)) {
-      if (name.startsWith("on") && typeof value === "function") {
-        addCustomEventListener(element, name.slice(2).toLowerCase(), value);
-      } else if (name === "className") {
-        element.className = value;
-      } else if (name === "id") {
-        element.id = value;
+    for (const [key, value] of Object.entries(node.props)) {
+      if (key.startsWith("on") && typeof value === "function") {
+        // addCustomEventListener(element, key.slice(2).toLowerCase(), value); // 👈🏼 hade event li drti a omar welah ma fhmt 7aja
+        const event = key.slice(2).toLowerCase();
+        element.addEventListener(event, value);
       } else {
-        element.setAttribute(name, value);
-      }
+        if (key === 'className') {
+          element.setAttribute('class', value);
+        } else {
+          element.setAttribute(key, value);
+        }
     }
+}
 
     for (const child of node.children.flat()) {
       element.appendChild(createElement(child));
