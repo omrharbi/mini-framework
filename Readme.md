@@ -329,13 +329,6 @@ MyEventSystem.addEventListener(domElement, eventType, callback);
 4. **Re-rendering**: Call the update function after state changes to refresh the UI
 5. **Routing**: Use hash-based routing for navigation between views
 
-## Limitations
-
-- No virtual DOM diffing (re-renders entire components)
-- Limited state management capabilities compared to mature frameworks
-- Basic routing without parameters or nested routes
-- No lifecycle methods or hooks beyond the provided functionality
-
 ## Conclusion
 
 This mini framework provides a simple yet effective way to build web applications with a component-based approach. While it lacks some features of larger frameworks, it offers enough functionality for small to medium-sized applications while maintaining a small footprint.
