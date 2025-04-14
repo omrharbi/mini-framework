@@ -1,4 +1,4 @@
-import { MyEventSystem } from "./evenet.js";
+import { MyEventSystem } from "./event.js";
 
 const Framework = (function () {
   const state = [];
@@ -54,6 +54,7 @@ const Framework = (function () {
     for (const [key, value] of Object.entries(node.attrs)) {
       if (key.startsWith("on") && typeof value === "function") {
         MyEventSystem.addEventListener(element,key.slice(2).toLowerCase(),value)
+        // element.addEventListener(key.slice(2).toLowerCase(), value)
       } else {
         if (key === 'className') {
           element.setAttribute('class', value);

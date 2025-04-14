@@ -1,8 +1,7 @@
 import { createStore } from '../../src/store.js';
 import { createRouter } from '../../src/Router.js';
 import { jsx, render } from '../../src/framework.js';
-import { MyEventSystem } from '../../src/evenet.js';
-
+ 
 const initialState = {
     todos: [],
     filter: 'all'
@@ -12,9 +11,9 @@ const store = createStore(initialState);
 const router = createRouter();
 let pathname = router.getHashPath();
 
-store.subscribe(() => {
-    update();
-});
+// store.subscribe(() => {
+//     update();
+// });
 
 window.addEventListener('hashchange', () => {
     pathname = router.getHashPath();
@@ -50,6 +49,7 @@ export function App() {
                                 completed: false
                             }
                         });
+                        update();
                         e.target.value = '';
                     }
                 }
@@ -65,6 +65,7 @@ export function App() {
                         store.dispatch({
                             type: 'DELETE_COMPLETED_TODO'
                         });
+                        update()
                     }
                 }, 'Clear completed')
             ) : ""
@@ -77,12 +78,22 @@ function TodoList(todos) {
             jsx('div', { className: `todo-item ${todo.completed ? 'completed' : ''}`, key: todo.id },
                 jsx('div', {
                     className: `todo-checkbox ${todo.completed ? 'checked' : ''}`,
-                    onClick: () => store.dispatch({ type: 'TOGGLE_TODO', payload: todo.id })
+                    onClick: () =>  {
+                        store.dispatch({
+                            type: 'TOGGLE_TODO', 
+                            payload: todo.id,
+                        });
+                        update();                    }
                 }),
                 jsx('div', { className: 'todo-text', style: `${todo.completed ? 'text-decoration: line-through;' : ''}` }, todo.text),
                 jsx('button', {
                     className: 'delete-button',
-                    onClick: () => store.dispatch({ type: 'DELETE_TODO', payload: todo.id })
+                    onClick: () => {
+                        store.dispatch({ type: 'DELETE_TODO', payload: todo.id
+                    })
+                    update();
+                }
+
                 }, '×')
             )
         )
@@ -93,19 +104,28 @@ function createTabs() {
     return jsx('div', { className: 'tab-container' },
         jsx('a', {
             href: '#/',
-            onClick: () => { store.dispatch({ type: 'SET_FILTER', payload: 'all' }) }
+            onClick: () => {
+                { store.dispatch({ type: 'SET_FILTER', payload: 'all' }) }
+                update()
+            }
         },
             jsx('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All')
         ),
         jsx('a', {
             href: '#/active',
-            onClick: () => { store.dispatch({ type: 'SET_FILTER', payload: 'active' }) }
+            onClick: () => {
+                { store.dispatch({ type: 'SET_FILTER', payload: 'active' })
+                update()
+         }}
         },
             jsx('button', { className: `tab ${pathname === '#/active' ? 'active' : ''}` }, 'Active')
         ),
         jsx('a', {
             href: '#/completed',
-            onClick: () => { store.dispatch({ type: 'SET_FILTER', payload: 'completed' }) }
+            onClick: () => {
+                { store.dispatch({ type: 'SET_FILTER', payload: 'completed' }) }
+                update()
+        }
         },
             jsx('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}` }, 'Completed')
         )
@@ -123,7 +143,7 @@ function filterTodos(todos, filter) {
     }
 }
 
-function update() {
+export function update() {
     render(App(), document.getElementById('root'));
 }
  
