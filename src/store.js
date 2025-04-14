@@ -11,12 +11,6 @@ export function createStore(initialState) {
         dispatch(action) {
             state = reducer(state, action);
         },
-        // subscribe(listener) {
-        //     listeners.push(listener);
-        //     return () => {
-        //         listeners = listeners.filter(l => l !== listener);
-        //     };
-        // }
     };
 }
 

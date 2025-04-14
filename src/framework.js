@@ -1,41 +1,7 @@
 import { MyEventSystem } from "./event.js";
 
 const Framework = (function () {
-  // const state = [];
-  // let stateIndex = 0;
-
-  // function useState(initialValue) {
-  //   const currentIndex = stateIndex;
-  //   state[currentIndex] = state[currentIndex] !== undefined ? state[currentIndex] : initialValue;
-
-  //   function setState(newValue) {
-  //     state[currentIndex] = newValue;
-  //     rerender();
-  //   }
-
-  //   stateIndex++;
-  //   return [state[currentIndex], setState];
-  // }
-
-  // const effects = [];
-  // let effectsIndex = 0;
-
-  // function useEffect(callback, dependency) {
-  //   const oldDependency = effects[effectsIndex];
-  //   let hasChanged = true;
-
-  //   if (oldDependency) {
-  //     hasChanged = dependency.some((dep, i) => !Object.is(dep, oldDependency[i]));
-  //   }
-
-  //   if (hasChanged) {
-  //     callback();
-  //   }
-
-  //   effects[effectsIndex] = dependency;
-  //   effectsIndex++;
-  // }
-
+ 
   function jsx(tag, attrs, ...children) {
     if (typeof tag === "function") {
       return tag({ ...attrs, children });
@@ -54,7 +20,6 @@ const Framework = (function () {
     for (const [key, value] of Object.entries(node.attrs)) {
       if (key.startsWith("on") && typeof value === "function") {
         MyEventSystem.addEventListener(element,key.slice(2).toLowerCase(),value)
-        // element.addEventListener(key.slice(2).toLowerCase(), value)
       } else {
         if (key === 'className') {
           element.setAttribute('class', value);
