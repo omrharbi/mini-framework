@@ -1,6 +1,7 @@
 import { createStore } from '../../src/store.js';
 import { createRouter } from '../../src/Router.js';
 import { jsx, render } from '../../src/framework.js';
+import { MyEventSystem } from '../../src/event.js';
  
 const initialState = {
     todos: [],
@@ -11,15 +12,11 @@ const store = createStore(initialState);
 const router = createRouter();
 let pathname = router.getHashPath();
 
-// store.subscribe(() => {
-//     update();
-// });
-
-window.addEventListener('hashchange', () => {
+ 
+MyEventSystem.addEventListener(window,"hashchange",()=>{
     pathname = router.getHashPath();
     update();
-});
-
+})
 export function App() {
     const { todos, filter } = store.getState();
     let filteredTodos = filterTodos(todos, filter);

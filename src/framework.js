@@ -76,8 +76,6 @@ const Framework = (function () {
 
   function rerender() {
     if (rootContainer && App) {
-      // stateIndex = 0;
-      // effectsIndex = 0;
       rootContainer.innerHTML = "";
       const vnode = App;
       const dom = createElement(vnode);
