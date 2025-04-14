@@ -1,5 +1,4 @@
 import { MyEventSystem } from "./evenet.js";
-import { addCustomEventListener } from "./event.js";
 
 const Framework = (function () {
   const state = [];
@@ -55,10 +54,6 @@ const Framework = (function () {
     for (const [key, value] of Object.entries(node.attrs)) {
       if (key.startsWith("on") && typeof value === "function") {
         MyEventSystem.addEventListener(element,key.slice(2).toLowerCase(),value)
-        // addCustomEventListener(element, key.slice(2).toLowerCase(), value); // 👈🏼 hade event li drti a omar welah ma fhmt 7aja
-        // const event = key.slice(2).toLowerCase();
-        // element.addEventListener(event, value);
-        // console.log(value,key);
       } else {
         if (key === 'className') {
           element.setAttribute('class', value);

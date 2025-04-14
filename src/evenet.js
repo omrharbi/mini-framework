@@ -3,9 +3,8 @@ export const MyEventSystem = {
     listeners: {},
 
     // Add an event listener
-    addEventListener(domElement, eventType, callback, options = {}) {
-        const useCapture = options.capture || false;
-
+    addEventListener(domElement, eventType, callback) {
+    
         // Initialize the event listener structure if not already present
         if (!this.listeners[domElement]) {
             this.listeners[domElement] = {};
@@ -17,7 +16,6 @@ export const MyEventSystem = {
         // Push the new listener into the array
         this.listeners[domElement][eventType].push({
             callback,
-            useCapture,
         });
 
         // Attach a single native event listener to handle all custom listeners
