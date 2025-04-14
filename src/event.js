@@ -1,63 +1,73 @@
 export const MyEventSystem = {
     // Store all event listeners
-    listeners: {},
+    listeners: new Map(),
 
     // Add an event listener
     addEventListener(domElement, eventType, callback) {
-    
-        // Initialize the event listener structure if not already present
-        if (!this.listeners[domElement]) {
-            this.listeners[domElement] = {};
-         }         
-        if (!this.listeners[domElement][eventType]) {
-            this.listeners[domElement][eventType] = [];
+        // Initialize listeners for this element if not present
+        if (!this.listeners.has(domElement)) {
+            this.listeners.set(domElement, {});
         }
         
-        // Push the new listener into the array
-        this.listeners[domElement][eventType].push({
-            callback,
-        });
 
-        // Attach a single native event listener to handle all custom listeners
-        domElement[`on${eventType}`] = (nativeEvent) => {
-            this.dispatchEvent(domElement, eventType, nativeEvent);
-        };
-         
+        const elementListeners = this.listeners.get(domElement);
+
+        if (!elementListeners[eventType]) {
+            elementListeners[eventType] = [];
+
+            // Attach native listener only once
+            domElement[`on${eventType}`] = (nativeEvent) => {
+                this.dispatchEvent(domElement, eventType, nativeEvent);
+            };
+        }
+
+        // Prevent duplicate registration
+        const alreadyExists = elementListeners[eventType].some(
+            (listener) => listener.callback === callback
+        );
+
+        if (!alreadyExists) {
+            elementListeners[eventType].push({ callback });
+        }
     },
-    
-    // Remove an event listener
-    removeEventListener(domElement, eventType, callback, options = {}) {
-        // const useCapture = options.capture || false;
 
-        if (
-            !this.listeners[domElement] ||
-            !this.listeners[domElement][eventType]
-        ) {
+    // Remove an event listener
+    removeEventListener(domElement, eventType, callback) {
+        const elementListeners = this.listeners.get(domElement);
+
+        if (!elementListeners || !elementListeners[eventType]) {
             return;
         }
 
         // Filter out the specific listener
-        this.listeners[domElement][eventType] = this.listeners[
-            domElement
-        ][eventType].filter(
-            (listener) =>
-                listener.callback !== callback 
-                // listener.useCapture !== useCapture
+        elementListeners[eventType] = elementListeners[eventType].filter(
+            (listener) => listener.callback !== callback
         );
+
+        // Optional: clean up if no listeners remain
+        if (elementListeners[eventType].length === 0) {
+            delete elementListeners[eventType];
+            domElement[`on${eventType}`] = null;
+        }
+
+        if (Object.keys(elementListeners).length === 0) {
+
+            this.listeners.delete(domElement);
+        }
     },
 
     // Dispatch an event to all registered listeners
     dispatchEvent(domElement, eventType, nativeEvent) {
-        if (
-            !this.listeners[domElement] ||
-            !this.listeners[domElement][eventType]
-        ) {
+        const elementListeners = this.listeners.get(domElement);
+
+        if (!elementListeners || !elementListeners[eventType]) {
             return;
         }
 
-        // Call all registered listeners for this event type
-        this.listeners[domElement][eventType].forEach((listener) => {
+        // Call all registered callbacks
+        elementListeners[eventType].forEach((listener) => {
             listener.callback(nativeEvent);
+
         });
     },
 };

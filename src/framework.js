@@ -1,40 +1,40 @@
 import { MyEventSystem } from "./event.js";
 
 const Framework = (function () {
-  const state = [];
-  let stateIndex = 0;
+  // const state = [];
+  // let stateIndex = 0;
 
-  function useState(initialValue) {
-    const currentIndex = stateIndex;
-    state[currentIndex] = state[currentIndex] !== undefined ? state[currentIndex] : initialValue;
+  // function useState(initialValue) {
+  //   const currentIndex = stateIndex;
+  //   state[currentIndex] = state[currentIndex] !== undefined ? state[currentIndex] : initialValue;
 
-    function setState(newValue) {
-      state[currentIndex] = newValue;
-      rerender();
-    }
+  //   function setState(newValue) {
+  //     state[currentIndex] = newValue;
+  //     rerender();
+  //   }
 
-    stateIndex++;
-    return [state[currentIndex], setState];
-  }
+  //   stateIndex++;
+  //   return [state[currentIndex], setState];
+  // }
 
-  const effects = [];
-  let effectsIndex = 0;
+  // const effects = [];
+  // let effectsIndex = 0;
 
-  function useEffect(callback, dependency) {
-    const oldDependency = effects[effectsIndex];
-    let hasChanged = true;
+  // function useEffect(callback, dependency) {
+  //   const oldDependency = effects[effectsIndex];
+  //   let hasChanged = true;
 
-    if (oldDependency) {
-      hasChanged = dependency.some((dep, i) => !Object.is(dep, oldDependency[i]));
-    }
+  //   if (oldDependency) {
+  //     hasChanged = dependency.some((dep, i) => !Object.is(dep, oldDependency[i]));
+  //   }
 
-    if (hasChanged) {
-      callback();
-    }
+  //   if (hasChanged) {
+  //     callback();
+  //   }
 
-    effects[effectsIndex] = dependency;
-    effectsIndex++;
-  }
+  //   effects[effectsIndex] = dependency;
+  //   effectsIndex++;
+  // }
 
   function jsx(tag, attrs, ...children) {
     if (typeof tag === "function") {
@@ -76,8 +76,8 @@ const Framework = (function () {
 
   function rerender() {
     if (rootContainer && App) {
-      stateIndex = 0;
-      effectsIndex = 0;
+      // stateIndex = 0;
+      // effectsIndex = 0;
       rootContainer.innerHTML = "";
       const vnode = App;
       const dom = createElement(vnode);
@@ -92,8 +92,6 @@ const Framework = (function () {
   }
 
   return {
-    useState,
-    useEffect,
     jsx,
     createElement,
     render,

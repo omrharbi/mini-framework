@@ -1,3 +1,5 @@
+
+
 export function createStore(initialState) {
     let state = initialState;
     let listeners = [];
@@ -19,7 +21,7 @@ export function createStore(initialState) {
 }
 
 function reducer(state, action) {
-    console.log(state,action);
+    console.log(state,action);    
     
     switch (action.type) {
         case 'ADD_TODO':
