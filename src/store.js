@@ -1,7 +1,6 @@
 export function createStore(initialState) {
     let state = initialState;
-    let listeners = [];
-
+    
     return {
         getState() {
             return state;
@@ -34,20 +33,12 @@ function reducer(state, action) {
                 )
             };
         case 'TOGGLE_ALL_TODOS':
-            console.log('action.payload:', action.payload);
             return {
                 ...state,
                 todos: state.todos.map(todo => ({
                     ...todo,
                     completed: action.payload
                 }))
-            };
-        case 'EDIT_TODO':
-            return {
-                ...state,
-                todos: state.todos.map(todo =>
-                    todo.id === action.payload.id ? { ...todo, text: action.payload.text } : todo
-                )
             };
         case 'DELETE_COMPLETED_TODO':
             return {

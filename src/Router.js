@@ -1,8 +1,6 @@
 import { jsx, render } from "./framework.js";
 
-export function getHashPath() {
-    console.log(';;;;;;;',window.location.hash);
-    
+export function getHashPath() {    
     return window.location.hash ;
 }
 
@@ -31,9 +29,7 @@ export class Router {
         if (route) {
             route();
             this.currentRoute = path;
-        } else {
-            console.log('Route not found');
-            // Default to home route if not found
+        } else {            // Default to home route if not found
             //window.location.hash = '#/';
             render(jsx(NotFoundPage, null), document.getElementById('root'));
         }

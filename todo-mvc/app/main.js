@@ -40,10 +40,13 @@ function TodoItem({ todo }) {
     
     const [editText, setEditText] = useState(todo.text);
     
+    
     const handleSubmit = () => {
         const text = editText.trim();
+        console.log(typeof text);
         
         if (text) {
+            console.log("hi");
             store.dispatch({
                 type: 'EDIT_TODO',
                 payload: {
@@ -51,21 +54,18 @@ function TodoItem({ todo }) {
                     text: text
                 }
             });
-        } else {
-            store.dispatch({
-                type: 'DELETE_TODO',
-                payload: todo.id
-            });
+            update();
         }
         store.dispatch({ type: 'CLEAR_EDITING_ID' });
-        update();
     };
     
     const handleKeyDown = (e) => {
-        console.log(e.target.value);
         if (e.key === 'Enter') {
-            update();
-            handleSubmit();
+            setEditText(e.target.value);
+            update()
+            handleSubmit()
+            console.log("editText", editText);
+
         }
     };
     
@@ -77,10 +77,10 @@ function TodoItem({ todo }) {
                 value: editText,
               //onblur: handleSubmit,
                 onkeydown: handleKeyDown,
-                oninput: (e) => {
-                     setEditText(e.target.value);
-                    // Don't call update() here as it will re-render and lose focus
-                },
+                // oninput: (e) => {
+                //      setEditText(e.target.value);
+                //     // Don't call update() here as it will re-render and lose focus
+                // },
                 autoFocus: true
             })
         );

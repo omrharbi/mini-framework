@@ -8,13 +8,12 @@ const Framework = (function () {
     const currentIndex = stateIndex;
     state[currentIndex] = state[currentIndex] !== undefined ? state[currentIndex] : initialValue;
 
-    function setState(newValue) {      
+    function setState(newValue) {
       state[currentIndex] = newValue;
-     // rerender();
     }
-    
+
     stateIndex++;
-    
+
     return [state[currentIndex], setState];
   }
 
