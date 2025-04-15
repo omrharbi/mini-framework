@@ -54,28 +54,32 @@ function TodoItem({ todo }) {
     };
 
     const handleKeyDown = (e) => {
-    
-        console.log(e.key);
-        
         if (e.key === 'Enter') {
-            const currentValue = e.target.value.trim()
-            if (currentValue) {
-                setEditText(currentValue);
-                handleSubmit(currentValue);
-            }
+            const currentValue = e.target.value;
+            setEditText(currentValue);
+            handleSubmit(currentValue);  // Pass current DOM value directly
         }
     };
 
+    const handleBlur = () => {
+        // console.log("ihihi");
+        
+        // handleSubmit(e.target.value);  // Use blur event value
+        store.dispatch({ type: 'CLEAR_EDITING_ID' });
+        update()
+    };
 
     if (isEditing) {
         return jsx('li', { className: 'editing' },
             jsx('div', { className: 'view' },
-                jsx('label', {}, todo.text)
+                jsx('label', {}, todo.text)  // Show current store value
             ),
             jsx('input', {
                 className: 'edit',
                 value: editText,
-                onkeydown: handleKeyDown
+                onkeydown: handleKeyDown,
+                // oninput: (e) => setEditText(e.target.value),
+                onblur: handleBlur
             })
         );
     }
@@ -172,7 +176,7 @@ export function App() {
                     ...filteredTodos.map(todo => 
                         jsx(TodoItem, { todo, key: todo.id })
                     )
-                )
+                ) 
             ) : "",
         todos.length ?
             jsx('footer', { className: 'footer' },
@@ -232,7 +236,9 @@ function filterTodos(todos, filter) {
     }
 }
 
-export function update() {    
+export function update() {   
+    console.log("update");
+     
     render(App(), document.getElementById('root'));
 }
 
