@@ -33,55 +33,49 @@ function areAllTodosCompleted(todos) {
 function getActiveTodosCount(todos) {
     return todos.filter(todo => !todo.completed).length;
 }
-
 function TodoItem({ todo }) {
     const { editingId } = store.getState();
     const isEditing = editingId === todo.id;
-    
     const [editText, setEditText] = useState(todo.text);
-    
-    
-    const handleSubmit = () => {
-        const text = editText.trim();
-        console.log(typeof text);
-        
-        if (text) {
-            console.log("hi");
+
+    const handleSubmit = (text) => {  // Accept text as parameter
+        const trimmedText = text.trim();
+        if (trimmedText) {
             store.dispatch({
                 type: 'EDIT_TODO',
                 payload: {
                     id: todo.id,
-                    text: text
+                    text: trimmedText
                 }
             });
-            update();
         }
         store.dispatch({ type: 'CLEAR_EDITING_ID' });
+        update();
     };
-    
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            setEditText(e.target.value);
-            update()
-            handleSubmit()
-            console.log("editText", editText);
 
+    const handleKeyDown = (e) => {
+    
+        console.log(e.key);
+        
+        if (e.key === 'Enter') {
+            const currentValue = e.target.value.trim()
+            if (currentValue) {
+                setEditText(currentValue);
+                handleSubmit(currentValue);
+            }
         }
     };
-    
+
+
     if (isEditing) {
         return jsx('li', { className: 'editing' },
-            jsx('div', { className: 'view' }),
+            jsx('div', { className: 'view' },
+                jsx('label', {}, todo.text)
+            ),
             jsx('input', {
                 className: 'edit',
                 value: editText,
-              //onblur: handleSubmit,
-                onkeydown: handleKeyDown,
-                // oninput: (e) => {
-                //      setEditText(e.target.value);
-                //     // Don't call update() here as it will re-render and lose focus
-                // },
-                autoFocus: true
+                onkeydown: handleKeyDown
             })
         );
     }
@@ -108,7 +102,7 @@ function TodoItem({ todo }) {
                         type: 'SET_EDITING_ID',
                         payload: todo.id
                     });
-                    setEditText(todo.text); // Ensure edit text is set to current todo text
+                    setEditText(todo.text);
                     update();
                 }
             }, todo.text),
@@ -242,6 +236,7 @@ export function update() {
     render(App(), document.getElementById('root'));
 }
 
-// Initialize router and render the app
+
+
 router.init();
 update();
