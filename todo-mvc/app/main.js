@@ -1,7 +1,6 @@
 import { createStore } from '../../src/store.js';
-import { createRouter } from '../../src/Router.js';
+import { Router, getHashPath } from '../../src/Router.js';
 import { jsx, render } from '../../src/framework.js';
-import { MyEventSystem } from '../../src/event.js';
  
 const initialState = {
     todos: [],
@@ -9,33 +8,46 @@ const initialState = {
 };
 
 const store = createStore(initialState);
-const router = createRouter();
-let pathname = router.getHashPath();
 
- 
-MyEventSystem.addEventListener(window,"hashchange",()=>{
-    pathname = router.getHashPath();
-    update();
-})
+// Define route handlers that will update the app with the correct filter
+const router = new Router({
+    '#/': () => {
+        store.dispatch({ type: 'SET_FILTER', payload: 'all' });
+        update();
+    },
+    '#/active': () => {
+        store.dispatch({ type: 'SET_FILTER', payload: 'active' });
+        update();
+    },
+    '#/completed': () => {
+        store.dispatch({ type: 'SET_FILTER', payload: 'completed' });
+        update();
+    }  
+});
+
+function areAllTodosCompleted(todos) {
+    return todos.length > 0 && todos.every(todo => todo.completed);
+}
+
+function getActiveTodosCount(todos) {
+    return todos.filter(todo => !todo.completed).length;
+}
+
 export function App() {
     const { todos, filter } = store.getState();
     let filteredTodos = filterTodos(todos, filter);
-
-    if (pathname === "#/active") {
-        filteredTodos = filterTodos(todos, 'active');
-    } else if (pathname === "#/completed") {
-        filteredTodos = filterTodos(todos, 'completed');
-    } else if (pathname === "#/") {
-        filteredTodos = filterTodos(todos, "all");
-    }
-
-    return jsx('div', { className: 'todo-container' },
-        jsx('h1', { className: 'title' }, 'TODOS'),
-        jsx('div', { className: 'todo-header' },
+    const activeTodoCount = getActiveTodosCount(todos);
+    const completedCount = todos.length - activeTodoCount;
+    const allCompleted = areAllTodosCompleted(todos);
+    
+    return jsx('section', { className: 'section' },
+    jsx('div', { className: 'todoapp' },
+        jsx('header', { className: 'header' },
+            jsx('h1', null, 'todos'),
             jsx('input', {
-                type: 'text',
-                className: 'todo-input',
+                className: 'new-todo',
                 placeholder: 'What needs to be done?',
+                autoFocus: true,
                 onKeyup: (e) => {
                     if (e.key === 'Enter' && e.target.value.trim()) {
                         store.dispatch({
@@ -52,81 +64,102 @@ export function App() {
                 }
             })
         ),
-        todos.length !== 0 ? createTabs() : "",
-        TodoList(filteredTodos),
-        todos.length !== 0 ?
-            jsx('div', { className: 'bottom-todos' },
-                jsx('button', {
-                    className: 'trash-button',
+        todos.length ? 
+            jsx('section', { className: 'main' },
+                jsx('input', {
+                    id: 'toggle-all',
+                    className: 'toggle-all',
+                    type: 'checkbox',
+                    checked: allCompleted,
                     onClick: () => {
                         store.dispatch({
-                            type: 'DELETE_COMPLETED_TODO'
+                            type: 'TOGGLE_ALL_TODOS',
+                            payload: !allCompleted
                         });
-                        update()
+                        update();
                     }
-                }, 'Clear completed')
-            ) : ""
-    );
-}
-
-function TodoList(todos) { 
-    return jsx('div', { className: 'todo-list' },
-        ...todos.map(todo =>
-            jsx('div', { className: `todo-item ${todo.completed ? 'completed' : ''}`, key: todo.id },
-                jsx('div', {
-                    className: `todo-checkbox ${todo.completed ? 'checked' : ''}`,
-                    onClick: () =>  {
-                        store.dispatch({
-                            type: 'TOGGLE_TODO', 
-                            payload: todo.id,
-                        });
-                        update();                    }
                 }),
-                jsx('div', { className: 'todo-text', style: `${todo.completed ? 'text-decoration: line-through;' : ''}` }, todo.text),
-                jsx('button', {
-                    className: 'delete-button',
-                    onClick: () => {
-                        store.dispatch({ type: 'DELETE_TODO', payload: todo.id
-                    })
-                    update();
-                }
+                jsx('label', { htmlFor: 'toggle-all' }, 'Mark all as complete'),
+                jsx('ul', { className: 'todo-list' },
+                    ...filteredTodos.map(todo =>
+                        jsx('li', { 
+                            className: todo.completed ? 'completed' : '',
+                            key: todo.id 
+                        },
+                            jsx('div', { className: 'view' },
+                                jsx('input', {
+                                    className: 'toggle',
+                                    type: 'checkbox',
+                                    checked: todo.completed,
+                                    onClick: () => {
+                                        store.dispatch({
+                                            type: 'TOGGLE_TODO', 
+                                            payload: todo.id,
+                                        });
+                                        update();
+                                    }
+                                }),
+                                jsx('label', null, todo.text),
+                                jsx('button', {
+                                    className: 'destroy',
+                                    onClick: () => {
+                                        store.dispatch({ 
+                                            type: 'DELETE_TODO', 
+                                            payload: todo.id
+                                        });
+                                        update();
+                                    }
+                                })
+                            )
+                        )
+                    )
+                )
+            ) : "",
+        todos.length ?
+            jsx('footer', { className: 'footer' },
+                jsx('span', { className: 'todo-count' },
+                    jsx('strong', null, activeTodoCount),
+                    ' ' + (activeTodoCount === 1 ? 'item' : 'items') + ' left'
+                ),
+                jsx('ul', { className: 'filters' },
+                    jsx('li', null,
+                        jsx('a', { 
+                            className: filter === 'all' ? 'selected' : '',
+                            href: '#/'
+                        }, 'All')
+                    ),
+                    jsx('li', null,
+                        jsx('a', { 
+                            className: filter === 'active' ? 'selected' : '',
+                            href: '#/active'
+                        }, 'Active')
+                    ),
+                    jsx('li', null,
+                        jsx('a', { 
+                            className: filter === 'completed' ? 'selected' : '',
+                            href: '#/completed'
+                        }, 'Completed')
+                    )
+                ),
+                    jsx('button', {
+                        className: 'clear-completed',
+                        onClick: () => {
+                            store.dispatch({
+                                type: 'DELETE_COMPLETED_TODO'
+                            });
+                            update();
+                        }
+                    }, 'Clear completed')
+                
+            ) : "",
 
-                }, '×')
-            )
-        )
-    );
-}
-
-function createTabs() {
-    return jsx('div', { className: 'tab-container' },
-        jsx('a', {
-            href: '#/',
-            onClick: () => {
-                { store.dispatch({ type: 'SET_FILTER', payload: 'all' }) }
-                update()
-            }
-        },
-            jsx('button', { className: `tab ${pathname === '#/' ? 'active' : ''}` }, 'All')
-        ),
-        jsx('a', {
-            href: '#/active',
-            onClick: () => {
-                { store.dispatch({ type: 'SET_FILTER', payload: 'active' })
-                update()
-         }}
-        },
-            jsx('button', { className: `tab ${pathname === '#/active' ? 'active' : ''}` }, 'Active')
-        ),
-        jsx('a', {
-            href: '#/completed',
-            onClick: () => {
-                { store.dispatch({ type: 'SET_FILTER', payload: 'completed' }) }
-                update()
-        }
-        },
-            jsx('button', { className: `tab ${pathname === '#/completed' ? 'active' : ''}` }, 'Completed')
-        )
-    );
+    ),
+    jsx('footer', { className: 'info' },
+        jsx('p', null, 'Double-click to edit a todo'),
+        jsx('p', null, 'Created with our own mini framework'),
+        jsx('p', null, 'Part of ', jsx('a', { href: 'http://todomvc.com' }, 'TodoMVC'))
+    )
+);
 }
 
 function filterTodos(todos, filter) {
@@ -143,5 +176,7 @@ function filterTodos(todos, filter) {
 export function update() {
     render(App(), document.getElementById('root'));
 }
- 
+
+// Initialize router and render the app
+router.init();
 update();
