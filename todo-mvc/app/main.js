@@ -79,7 +79,7 @@ export function App() {
                         update();
                     }
                 }),
-                jsx('label', { htmlFor: 'toggle-all' }, 'Mark all as complete'),
+                jsx('label', { for: 'toggle-all' }, 'Mark all as complete'),
                 jsx('ul', { className: 'todo-list' },
                     ...filteredTodos.map(todo =>
                         jsx('li', { 
