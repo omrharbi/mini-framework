@@ -1,7 +1,23 @@
 import { MyEventSystem } from "./event.js";
 
 const Framework = (function () {
- 
+  const state = [];
+  let stateIndex = 0;
+
+  function useState(initialValue) {
+    const currentIndex = stateIndex;
+    state[currentIndex] = state[currentIndex] !== undefined ? state[currentIndex] : initialValue;
+
+    function setState(newValue) {      
+      state[currentIndex] = newValue;
+     // rerender();
+    }
+    
+    stateIndex++;
+    
+    return [state[currentIndex], setState];
+  }
+
   function jsx(tag, attrs, ...children) {
     if (typeof tag === "function") {
       return tag({ ...attrs, children });
@@ -19,15 +35,15 @@ const Framework = (function () {
 
     for (const [key, value] of Object.entries(node.attrs)) {
       if (key.startsWith("on") && typeof value === "function") {
-        MyEventSystem.addEventListener(element,key.slice(2).toLowerCase(),value)
+        MyEventSystem.addEventListener(element, key.slice(2).toLowerCase(), value);
       } else {
         if (key === 'className') {
           element.setAttribute('class', value);
         } else {
           element.setAttribute(key, value);
         }
+      }
     }
-}
 
     for (const child of node.children.flat()) {
       element.appendChild(createElement(child));
@@ -41,6 +57,7 @@ const Framework = (function () {
 
   function rerender() {
     if (rootContainer && App) {
+      stateIndex = 0;
       rootContainer.innerHTML = "";
       const vnode = App;
       const dom = createElement(vnode);
@@ -57,6 +74,7 @@ const Framework = (function () {
   return {
     jsx,
     createElement,
+    useState,
     render,
     setApp: function (app) {
       App = app;

@@ -1,10 +1,11 @@
 import { createStore } from '../../src/store.js';
 import { Router, getHashPath } from '../../src/Router.js';
-import { jsx, render } from '../../src/framework.js';
+import { jsx, render, useState } from '../../src/framework.js';
  
 const initialState = {
     todos: [],
-    filter: 'all'
+    filter: 'all',
+    editingId: null
 };
 
 const store = createStore(initialState);
@@ -33,12 +34,105 @@ function getActiveTodosCount(todos) {
     return todos.filter(todo => !todo.completed).length;
 }
 
+function TodoItem({ todo }) {
+    const { editingId } = store.getState();
+    const isEditing = editingId === todo.id;
+    
+    const [editText, setEditText] = useState(todo.text);
+    
+    const handleSubmit = () => {
+        const text = editText.trim();
+        
+        if (text) {
+            store.dispatch({
+                type: 'EDIT_TODO',
+                payload: {
+                    id: todo.id,
+                    text: text
+                }
+            });
+        } else {
+            store.dispatch({
+                type: 'DELETE_TODO',
+                payload: todo.id
+            });
+        }
+        store.dispatch({ type: 'CLEAR_EDITING_ID' });
+        update();
+    };
+    
+    const handleKeyDown = (e) => {
+        console.log(e.target.value);
+        if (e.key === 'Enter') {
+            update();
+            handleSubmit();
+        }
+    };
+    
+    if (isEditing) {
+        return jsx('li', { className: 'editing' },
+            jsx('div', { className: 'view' }),
+            jsx('input', {
+                className: 'edit',
+                value: editText,
+              //onblur: handleSubmit,
+                onkeydown: handleKeyDown,
+                oninput: (e) => {
+                     setEditText(e.target.value);
+                    // Don't call update() here as it will re-render and lose focus
+                },
+                autoFocus: true
+            })
+        );
+    }
+    
+    return jsx('li', { 
+        className: todo.completed ? 'completed' : '',
+    },
+        jsx('div', { className: 'view' },
+            jsx('input', {
+                className: 'toggle',
+                type: 'checkbox',
+                checked: todo.completed,
+                onclick: () => {
+                    store.dispatch({
+                        type: 'TOGGLE_TODO', 
+                        payload: todo.id,
+                    });
+                    update();
+                }
+            }),
+            jsx('label', { 
+                ondblclick: () => {
+                    store.dispatch({
+                        type: 'SET_EDITING_ID',
+                        payload: todo.id
+                    });
+                    setEditText(todo.text); // Ensure edit text is set to current todo text
+                    update();
+                }
+            }, todo.text),
+            jsx('button', {
+                className: 'destroy',
+                onclick: () => {
+                    store.dispatch({ 
+                        type: 'DELETE_TODO', 
+                        payload: todo.id
+                    });
+                    update();
+                }
+            })
+        )
+    );
+}
+
 export function App() {
     const { todos, filter } = store.getState();
     let filteredTodos = filterTodos(todos, filter);
     const activeTodoCount = getActiveTodosCount(todos);
     const completedCount = todos.length - activeTodoCount;
     const allCompleted = areAllTodosCompleted(todos);
+
     
     return jsx('section', { className: 'section' },
     jsx('div', { className: 'todoapp' },
@@ -81,37 +175,8 @@ export function App() {
                 }),
                 jsx('label', { for: 'toggle-all' }, 'Mark all as complete'),
                 jsx('ul', { className: 'todo-list' },
-                    ...filteredTodos.map(todo =>
-                        jsx('li', { 
-                            className: todo.completed ? 'completed' : '',
-                            key: todo.id 
-                        },
-                            jsx('div', { className: 'view' },
-                                jsx('input', {
-                                    className: 'toggle',
-                                    type: 'checkbox',
-                                    checked: todo.completed,
-                                    onClick: () => {
-                                        store.dispatch({
-                                            type: 'TOGGLE_TODO', 
-                                            payload: todo.id,
-                                        });
-                                        update();
-                                    }
-                                }),
-                                jsx('label', null, todo.text),
-                                jsx('button', {
-                                    className: 'destroy',
-                                    onClick: () => {
-                                        store.dispatch({ 
-                                            type: 'DELETE_TODO', 
-                                            payload: todo.id
-                                        });
-                                        update();
-                                    }
-                                })
-                            )
-                        )
+                    ...filteredTodos.map(todo => 
+                        jsx(TodoItem, { todo, key: todo.id })
                     )
                 )
             ) : "",
@@ -173,7 +238,7 @@ function filterTodos(todos, filter) {
     }
 }
 
-export function update() {
+export function update() {    
     render(App(), document.getElementById('root'));
 }
 
