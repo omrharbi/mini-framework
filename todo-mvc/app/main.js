@@ -23,8 +23,7 @@ const router = new Router({
         store.dispatch({ type: 'SET_FILTER', payload: 'completed' });
         update();
     }
-});
-
+}); 
 function areAllTodosCompleted(todos) {
     return todos.length > 0 && todos.every(todo => todo.completed);
 }

@@ -16,10 +16,6 @@ export class Router {
         MyEventSystem.addEventListener(window,'hashchange',() => {
             this.handleRouting();
         })
-        // Listen for hash changes
-        // window.addEventListener('hashchange', () => {
-        //     this.handleRouting();
-        // });
     }
 
     navigate(path) {
@@ -29,6 +25,8 @@ export class Router {
     handleRouting() {
         const path = getHashPath();
         const route = this.routes[path];
+        console.log("route",route);
+        
 
         if (route) {
             route();
@@ -39,6 +37,8 @@ export class Router {
         }
     }
     init() {
+        console.log("init");
+        
         this.handleRouting();
     }
 }
@@ -58,7 +58,7 @@ const NotFoundPage = () => {
       "If this is your site, make sure that the filename case matches the URL as well as any file permissions.",
       jsx("br", null),
       "For root URLs (like ",
-      jsx("code", null, "http://ana.com/"),
+      jsx("code", null, "http://zone01oujda.ma/"),
       ") you must provide an ",
       jsx("code", null, "index.html"),
       " file."
