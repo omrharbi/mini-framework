@@ -54,7 +54,9 @@ function TodoItem({ todo }) {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
+        console.log("e.target.value.trim()", e.target.value.trim());
+        
+        if (e.key === 'Enter' && e.target.value.trim() != "") {
             const currentValue = e.target.value;
             setEditText(currentValue);
             handleSubmit(currentValue);  // Pass current DOM value directly
@@ -91,7 +93,6 @@ function TodoItem({ todo }) {
             jsx('input', {
                 className: 'toggle',
                 type: 'checkbox',
-                checked: todo.completed,
                 onclick: () => {
                     store.dispatch({
                         type: 'TOGGLE_TODO', 
@@ -128,9 +129,7 @@ export function App() {
     const { todos, filter } = store.getState();
     let filteredTodos = filterTodos(todos, filter);
     const activeTodoCount = getActiveTodosCount(todos);
-    const completedCount = todos.length - activeTodoCount;
     const allCompleted = areAllTodosCompleted(todos);
-
     
     return jsx('section', { className: 'section' },
     jsx('div', { className: 'todoapp' },
@@ -139,7 +138,6 @@ export function App() {
             jsx('input', {
                 className: 'new-todo',
                 placeholder: 'What needs to be done?',
-                autoFocus: true,
                 onKeyup: (e) => {
                     if (e.key === 'Enter' && e.target.value.trim()) {
                         store.dispatch({
