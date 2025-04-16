@@ -178,18 +178,18 @@ update();
 The framework provides basic hash-based routing:
 
 ```javascript
-// Create router
-const router = createRouter();
+// Create class router
+const router = new Router();
 
 // Get current hash path
 const currentPath = router.getHashPath();
 
 // Listen for hash changes
-MyEventSystem.addEventListener(window, "hashchange", () => {
-  const newPath = router.getHashPath();
-  console.log('Route changed to:', newPath);
-  update(); // Re-render the application
-});
+initEventListeners() {
+  MyEventSystem.addEventListener(window,'hashchange',() => {
+    this.handleRouting();
+  })
+};
 ```
 
 ## Example Application
