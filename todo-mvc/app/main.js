@@ -10,7 +10,6 @@ const initialState = {
 
 const store = createStore(initialState);
 
-// Define route handlers that will update the app with the correct filter
 const router = new Router({
     '#/': () => {
         store.dispatch({ type: 'SET_FILTER', payload: 'all' });
@@ -39,7 +38,7 @@ function TodoItem({ todo }) {
     const isEditing = editingId === todo.id;
     const [editText, setEditText] = useState(todo.text);
 
-    const handleSubmit = (text) => {  // Accept text as parameter
+    const handleSubmit = (text) => { 
         const trimmedText = text.trim();
         if (trimmedText) {
             store.dispatch({
@@ -58,14 +57,11 @@ function TodoItem({ todo }) {
         if (e.key === 'Enter' && e.target.value.trim() != "") {
             const currentValue = e.target.value;
             setEditText(currentValue);
-            handleSubmit(currentValue);  // Pass current DOM value directly
+            handleSubmit(currentValue); 
         }
     };
 
     const handleBlur = () => {
-        // console.log("ihihi");
-
-        // handleSubmit(e.target.value);  // Use blur event value
         store.dispatch({ type: 'CLEAR_EDITING_ID' });
         update()
     };
@@ -73,13 +69,12 @@ function TodoItem({ todo }) {
     if (isEditing) {
         return jsx('li', { className: 'editing' },
             jsx('div', { className: 'view' },
-                jsx('label', {}, todo.text)  // Show current store value
+                jsx('label', {}, todo.text) 
             ),
             jsx('input', {
                 className: 'edit',
                 value: editText,
                 onkeydown: handleKeyDown,
-                // oninput: (e) => setEditText(e.target.value),
                 onblur: handleBlur
             })
         );
@@ -184,7 +179,7 @@ export function App() {
                             type: 'checkbox',
                             checked: allCompleted,
                         }),
-                        jsx('ul', { className: 'todo-list' }) // empty list to preserve structure
+                        jsx('ul', { className: 'todo-list' }) 
                     )
                 )
             ) : "",
