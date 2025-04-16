@@ -1,3 +1,4 @@
+import { MyEventSystem } from "./event.js";
 import { jsx, render } from "./framework.js";
 
 export function getHashPath() {    
@@ -12,10 +13,13 @@ export class Router {
     }
 
     initEventListeners() {
-        // Listen for hash changes
-        window.addEventListener('hashchange', () => {
+        MyEventSystem.addEventListener(window,'hashchange',() => {
             this.handleRouting();
-        });
+        })
+        // Listen for hash changes
+        // window.addEventListener('hashchange', () => {
+        //     this.handleRouting();
+        // });
     }
 
     navigate(path) {

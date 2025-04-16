@@ -33,6 +33,7 @@ function areAllTodosCompleted(todos) {
 function getActiveTodosCount(todos) {
     return todos.filter(todo => !todo.completed).length;
 }
+
 function TodoItem({ todo }) {
     const { editingId } = store.getState();
     const isEditing = editingId === todo.id;
@@ -53,9 +54,7 @@ function TodoItem({ todo }) {
         update();
     };
 
-    const handleKeyDown = (e) => {
-        console.log("e.target.value.trim()", e.target.value.trim());
-        
+    const handleKeyDown = (e) => {        
         if (e.key === 'Enter' && e.target.value.trim() != "") {
             const currentValue = e.target.value;
             setEditText(currentValue);
@@ -154,7 +153,7 @@ export function App() {
                 }
             })
         ),
-        todos.length ? 
+        todos.length ?
             jsx('section', { className: 'main' },
                 jsx('input', {
                     id: 'toggle-all',
