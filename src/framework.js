@@ -1,5 +1,5 @@
 import { MyEventSystem } from "./event.js";
-
+import { diff, patch } from "./vdom.js";
 const Framework = (function () {
   const state = [];
   let stateIndex = 0;
@@ -54,23 +54,50 @@ const Framework = (function () {
   let rootContainer = null;
   let App = null;
 
-  function rerender() {
-    if (rootContainer && App) {
-      stateIndex = 0;
-      rootContainer.innerHTML = "";
-      const vnode = App;
-      const dom = createElement(vnode);
-      rootContainer.appendChild(dom);
+  // function rerender() {
+  //   if (rootContainer && App) {
+  //     stateIndex = 0;
+  //     rootContainer.innerHTML = "";
+  //     const vnode = App;
+  //     const dom = createElement(vnode);
+  //     rootContainer.appendChild(dom);
+  //   }
+  // }
+  function rerender(newVNode, container) {
+    if ( container._vdom === undefined ) {
+      render(newVNode, container);
+      
     }
+    stateIndex = 0;
+    const oldVNode = container._vdom;
+    
+    const patches = diff(oldVNode, newVNode);
+    
+    patch(container, patches, 0);
+    
+    container._vdom = newVNode;
   }
 
-  function render(component, container) {
-    App = component;
-    rootContainer = container;
-    rerender();
+  // function render(component, container) {
+  //   App = component;
+  //   rootContainer = container;
+  //   rerender();
+  // }
+
+  function render(vNode, container) {
+    container.innerHTML = '';
+    App = vNode;
+  rootContainer = container;
+    const element = createElement(vNode);
+    container.appendChild(element);
+    
+    container._vdom = vNode;
+    
+    return element;
   }
 
   return {
+    rerender,
     jsx,
     createElement,
     useState,
@@ -81,4 +108,4 @@ const Framework = (function () {
   };
 })();
 
-export const { useState, useEffect, jsx, createElement, render, setApp } = Framework;
+export const { useState, useEffect, jsx, createElement, render, setApp, rerender } = Framework;

@@ -1,6 +1,6 @@
 import { createStore } from '../../src/store.js';
 import { Router, getHashPath } from '../../src/Router.js';
-import { jsx, render, useState } from '../../src/framework.js';
+import { jsx, render, useState, rerender } from '../../src/framework.js';
 
 const initialState = {
     todos: [],
@@ -241,8 +241,6 @@ function filterTodos(todos, filter) {
 }
 
 export function update() {
-    console.log("update");
-
     render(App(), document.getElementById('root'));
 }
 

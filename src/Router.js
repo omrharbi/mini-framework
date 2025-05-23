@@ -24,9 +24,7 @@ export class Router {
 
     handleRouting() {
         const path = getHashPath();
-        const route = this.routes[path];
-        console.log("route",route);
-        
+        const route = this.routes[path];        
 
         if (route) {
             route();
@@ -36,9 +34,7 @@ export class Router {
             render(jsx(NotFoundPage, null), document.getElementById('root'));
         }
     }
-    init() {
-        console.log("init");
-        
+    init() {        
         this.handleRouting();
     }
 }

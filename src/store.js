@@ -51,6 +51,11 @@ function reducer(state, action) {
             return { ...state, editingId: action.payload };
         case 'CLEAR_EDITING_ID':
             return { ...state, editingId: null };
+        case 'DELETE_TODO':
+            return {
+                ...state,
+                todos: state.todos.filter(todo => todo.id !== action.payload)
+            };
         default:
             return state;
     }
