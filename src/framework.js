@@ -35,12 +35,17 @@ const Framework = (function () {
     for (const [key, value] of Object.entries(node.attrs)) {
       if (key.startsWith("on") && typeof value === "function") {
         MyEventSystem.addEventListener(element, key.slice(2).toLowerCase(), value);
-      } else {
-        if (key === 'className') {
-          element.setAttribute('class', value);
-        } else {
-          element.setAttribute(key, value);
+      } else if (key === 'autofocus') {
+        if (value === 'autofocus' || value === true) {
+          element.autofocus = true;
+          setTimeout(() => {
+            element.focus();
+          }, 0);
         }
+      } else if (key === 'className') {
+        element.setAttribute('class', value);
+      } else {
+        element.setAttribute(key, value);
       }
     }
 
@@ -54,15 +59,6 @@ const Framework = (function () {
   let rootContainer = null;
   let App = null;
 
-  // function rerender() {
-  //   if (rootContainer && App) {
-  //     stateIndex = 0;
-  //     rootContainer.innerHTML = "";
-  //     const vnode = App;
-  //     const dom = createElement(vnode);
-  //     rootContainer.appendChild(dom);
-  //   }
-  // }
   function rerender(newVNode, container) {
     if ( container._vdom === undefined ) {
       render(newVNode, container);
@@ -78,16 +74,10 @@ const Framework = (function () {
     container._vdom = newVNode;
   }
 
-  // function render(component, container) {
-  //   App = component;
-  //   rootContainer = container;
-  //   rerender();
-  // }
-
   function render(vNode, container) {
     container.innerHTML = '';
     App = vNode;
-  rootContainer = container;
+    rootContainer = container;
     const element = createElement(vNode);
     container.appendChild(element);
     

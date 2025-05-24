@@ -8,6 +8,8 @@ const initialState = {
     editingId: null
 };
 
+let cc = true
+
 const store = createStore(initialState);
 
 const router = new Router({
@@ -73,6 +75,7 @@ function TodoItem({ todo }) {
             jsx('input', {
                 className: 'edit',
                 value: editText,
+                autofocus: 'autofocus',
                 onkeydown: handleKeyDown,
                 onblur: handleBlur
             })
@@ -100,6 +103,7 @@ function TodoItem({ todo }) {
                         type: 'SET_EDITING_ID',
                         payload: todo.id
                     });
+                    cc = false
                     setEditText(todo.text);
                     update();
                 }
@@ -131,6 +135,7 @@ export function App() {
                 jsx('input', {
                     className: 'new-todo',
                     placeholder: 'What needs to be done?',
+                    autofocus: 'autofocus',
                     onKeyup: (e) => {
                         if (e.key === 'Enter' && e.target.value.trim()) {
                             store.dispatch({
@@ -141,6 +146,7 @@ export function App() {
                                     completed: false
                                 }
                             });
+
                             update();
                             e.target.value = '';
                         }

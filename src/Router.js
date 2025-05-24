@@ -29,8 +29,7 @@ export class Router {
         if (route) {
             route();
             this.currentRoute = path;
-        } else {            // Default to home route if not found
-            //window.location.hash = '#/';
+        } else {
             render(jsx(NotFoundPage, null), document.getElementById('root'));
         }
     }
