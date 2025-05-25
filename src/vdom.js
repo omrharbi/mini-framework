@@ -51,8 +51,7 @@ export function patchAttrs(el, attrsPatches) {
     } else if (key.startsWith("on") && typeof value === "function") {
       const eventType = key.substring(2).toLowerCase();
       if (el._listeners && el._listeners[eventType]) {
-        //el.removeEventListener(eventType, el._listeners[eventType]);
-        MyEventSystem.removeEventListener(el, eventType, value);
+        MyEventSystem.removeEventListener(el, eventType, el._listeners[eventType]);
       }
       MyEventSystem.addEventListener(el, eventType, value);
       el._listeners = el._listeners || {};
@@ -152,27 +151,3 @@ export function patch(parent, patches, index = 0) {
       break;
   }
 }
-
-// export function render(vNode, container) {
-//   container.innerHTML = "";
-
-//   const element = createElement(vNode);
-//   container.appendChild(element);
-
-//   container._vdom = vNode;
-
-//   return element;
-// }
-
-// export function updateRender(newVNode, container) {
-//   const oldVNode = container._vdom;
-//   if (!oldVNode) {
-//     render(newVNode, container);
-//     return;
-//   }
-//   const patches = diff(oldVNode, newVNode);
-
-//   patch(container, patches, 0);
-
-//   container._vdom = newVNode;
-// }
