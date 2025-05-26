@@ -1,20 +1,28 @@
 import { MyEventSystem } from "./event.js";
 import { diff, patch } from "./vdom.js";
+
 const Framework = (function () {
-  const state = [];
+  let stateHooks = [];
   let stateIndex = 0;
+  let rootContainer = null;
+  let App = null;
 
   function useState(initialValue) {
     const currentIndex = stateIndex;
-    state[currentIndex] = state[currentIndex] !== undefined ? state[currentIndex] : initialValue;
+
+    stateHooks[currentIndex] = stateHooks[currentIndex] 
+      !== undefined ? stateHooks[currentIndex] : initialValue;
 
     function setState(newValue) {
-      state[currentIndex] = newValue;
+      stateHooks[currentIndex] = newValue;
+      // Call the global update function instead of updateRender directly
+      if (window.updateApp) {
+        window.updateApp();
+      }
     }
 
     stateIndex++;
-
-    return [state[currentIndex], setState];
+    return [stateHooks[currentIndex], setState];
   }
 
   function jsx(tag, attrs, ...children) {
@@ -22,7 +30,7 @@ const Framework = (function () {
       return tag({ ...attrs, children });
     }
 
-    return { tag, attrs: attrs || {}, children };
+    return { tag, attrs: attrs || {}, children: children.flat() };
   }
 
   function createElement(node) {
@@ -34,7 +42,8 @@ const Framework = (function () {
 
     for (const [key, value] of Object.entries(node.attrs)) {
       if (key.startsWith("on") && typeof value === "function") {
-        MyEventSystem.addEventListener(element, key.slice(2).toLowerCase(), value);
+        const eventType = key.slice(2).toLowerCase();
+        MyEventSystem.addEventListener(element, eventType, value);
       } else if (key === 'autofocus') {
         if (value === 'autofocus' || value === true) {
           element.autofocus = true;
@@ -44,58 +53,66 @@ const Framework = (function () {
         }
       } else if (key === 'className') {
         element.setAttribute('class', value);
+      } else if (key === 'checked' && typeof value === 'boolean') {
+        element.checked = value;
+      } else if (key === 'value' && typeof value === 'string') {
+        element.value = value;
       } else {
         element.setAttribute(key, value);
       }
     }
 
-    for (const child of node.children.flat()) {
-      element.appendChild(createElement(child));
+    for (const child of node.children) {
+      if (child !== null && child !== undefined && child !== false) {
+        element.appendChild(createElement(child));
+      }
     }
 
     return element;
   }
 
-  let rootContainer = null;
-  let App = null;
-
-  function rerender(newVNode, container) {
-    if ( container._vdom === undefined ) {
-      render(newVNode, container);
-      
-    }
+  function updateRender(newVNode, container) {
     stateIndex = 0;
+
+    if (!container._vdom) {
+      render(newVNode, container);
+      return;
+    }
+
     const oldVNode = container._vdom;
-    
     const patches = diff(oldVNode, newVNode);
-    
-    patch(container, patches, 0);
-    
+
+    if (patches) {
+      patch(container, patches, 0);
+    }
+
     container._vdom = newVNode;
   }
 
   function render(vNode, container) {
+    if (!container || !vNode) return;
+
     container.innerHTML = '';
     App = vNode;
     rootContainer = container;
     const element = createElement(vNode);
     container.appendChild(element);
-    
+
     container._vdom = vNode;
-    
+
     return element;
   }
 
   return {
-    rerender,
     jsx,
     createElement,
     useState,
     render,
+    updateRender,
     setApp: function (app) {
       App = app;
     },
   };
 })();
 
-export const { useState, useEffect, jsx, createElement, render, setApp, rerender } = Framework;
+export const { useState, jsx, createElement, render, updateRender, setApp } = Framework;

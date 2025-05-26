@@ -2,21 +2,23 @@ export const MyEventSystem = {
     listeners: new Map(),
 
     addEventListener(domElement, eventType, callback) {
+        // Store the callback for later removal if needed
         if (!this.listeners.has(domElement)) {
-            this.listeners.set(domElement, {});
+            this.listeners.set(domElement, new Map());
         }
         
         const elementListeners = this.listeners.get(domElement);
-
-        if (!elementListeners[eventType]) {
-            elementListeners[eventType] = [];
-            domElement[`on${eventType}`] = (nativeEvent) => {
-                this.dispatchEvent(domElement, eventType, nativeEvent);
-            };
+        
+        // Remove old listener if exists
+        if (elementListeners.has(eventType)) {
+            const oldCallback = elementListeners.get(eventType);
+            domElement.removeEventListener(eventType, oldCallback);
         }
-        elementListeners[eventType].push({ callback });
+        
+        // Add new listener
+        domElement.addEventListener(eventType, callback);
+        elementListeners.set(eventType, callback);
     },
-
     removeEventListener(domElement, eventType, callback) {
         const elementListeners = this.listeners.get(domElement);
 
