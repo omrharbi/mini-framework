@@ -78,14 +78,12 @@ const Framework = (function () {
       render(newVNode, container);
       return;
     }
-
     const oldVNode = container._vdom;
     const patches = diff(oldVNode, newVNode);
 
     if (patches) {
       patch(container, patches, 0);
     }
-
     container._vdom = newVNode;
   }
 

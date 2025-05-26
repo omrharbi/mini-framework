@@ -1,6 +1,6 @@
 import { createStore } from '../../src/store.js';
 import { Router } from '../../src/Router.js';
-import { jsx,  useState,  updateRender } from '../../src/framework.js';
+import { jsx,updateRender,useState } from '../../src/framework.js';
 
 const initialState = {
     todos: [],
@@ -75,7 +75,7 @@ function TodoItem({ todo }) {
             jsx('input', {
                 className: 'edit',
                 value: editText,
-                autofocus: true,
+                autofocus: 'autofocus',
                 onkeydown: handleKeyDown,
                 onblur: handleBlur
             })
@@ -90,13 +90,11 @@ function TodoItem({ todo }) {
                 className: 'toggle',
                 type: 'checkbox',
                 checked: todo.completed,
-
                 onclick: () => {
                     store.dispatch({
                         type: 'TOGGLE_TODO',
                         payload: todo.id,
                     });
-                    //  cc = true
                     update();
                 }
             }),
@@ -106,14 +104,14 @@ function TodoItem({ todo }) {
                         type: 'SET_EDITING_ID',
                         payload: todo.id
                     });
-                    // cc = false
+                    cc = false
                     setEditText(todo.text);
                     update();
                 }
             }, todo.text),
             jsx('button', {
                 className: 'destroy',
-                onClick: () => {
+                onclick: () => {
                     store.dispatch({
                         type: 'DELETE_TODO',
                         payload: todo.id
@@ -130,7 +128,7 @@ export function App() {
     let filteredTodos = filterTodos(todos, filter);
     const activeTodoCount = getActiveTodosCount(todos);
     const allCompleted = areAllTodosCompleted(todos);
-    console.log("tdleng",todos.length);
+
     return jsx('section', { className: 'section' },
         jsx('div', { className: 'todoapp' },
             jsx('header', { className: 'header' },
@@ -191,8 +189,7 @@ export function App() {
                     )
                 )
             ) : "",
-            todos.length > 0?
-
+            todos.length ?
                 jsx('footer', { className: 'footer' },
                     jsx('span', { className: 'todo-count' },
                         jsx('strong', null, activeTodoCount),
@@ -224,13 +221,11 @@ export function App() {
                             store.dispatch({
                                 type: 'DELETE_COMPLETED_TODO'
                             });
-                            console.log("pp");
-                            
                             update();
                         }
                     }, 'Clear completed')
 
-                ) :  "",
+                ) : "",
 
         ),
         jsx('footer', { className: 'info' },
@@ -253,8 +248,6 @@ function filterTodos(todos, filter) {
 }
 
 export function update() {
-    console.log("update called");
-    
     updateRender(App(), document.getElementById('root'));
 }
 
