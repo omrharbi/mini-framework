@@ -128,7 +128,8 @@ export function App() {
     let filteredTodos = filterTodos(todos, filter);
     const activeTodoCount = getActiveTodosCount(todos);
     const allCompleted = areAllTodosCompleted(todos);
-
+    console.log(activeTodoCount ,"activeTodoCount");
+    let count=allCompleted ? 0 : todos.length;
     return jsx('section', { className: 'section' },
         jsx('div', { className: 'todoapp' },
             jsx('header', { className: 'header' },
@@ -189,11 +190,12 @@ export function App() {
                     )
                 )
             ) : "",
-            todos.length ?
+            todos.length>0 ?
                 jsx('footer', { className: 'footer' },
                     jsx('span', { className: 'todo-count' },
-                        jsx('strong', null, activeTodoCount),
+                        jsx('strong', null, "" + activeTodoCount) ,
                         ' ' + (activeTodoCount === 1 ? 'item' : 'items') + ' left'
+                        
                     ),
                     jsx('ul', { className: 'filters' },
                         jsx('li', null,
